@@ -1,0 +1,281 @@
+{
+  "generated_at": "2026-07-08",
+  "method_note": "Every game is scored by two models: 'blind' uses only pre-tournament + group-stage signal (graded 0.750 accuracy on all 24 completed R32+R16 games, zero knockout-outcome fitting); 'aware' adds each team's knockout form from the already-played R32+R16 (a legitimate forward-looking use of completed results, not leakage - see model/train.py). An apples-to-apples test on the 8 R16 games found 'aware' didn't change any pick and was not distinguishably better with n=8, so both are shown rather than picking one as definitive.",
+  "teams": [
+    {
+      "name": "Argentina",
+      "strength_blind": 1.2477,
+      "strength_aware": 1.351,
+      "fifa_rank": 1,
+      "group_pts": 9,
+      "narrative": 1,
+      "is_host": false
+    },
+    {
+      "name": "Belgium",
+      "strength_blind": 0.2279,
+      "strength_aware": 0.4438,
+      "fifa_rank": 9,
+      "group_pts": 5,
+      "narrative": -1,
+      "is_host": false
+    },
+    {
+      "name": "England",
+      "strength_blind": 0.6567,
+      "strength_aware": 0.8742,
+      "fifa_rank": 4,
+      "group_pts": 7,
+      "narrative": 0,
+      "is_host": false
+    },
+    {
+      "name": "France",
+      "strength_blind": 1.1333,
+      "strength_aware": 1.4634,
+      "fifa_rank": 3,
+      "group_pts": 9,
+      "narrative": 1,
+      "is_host": false
+    },
+    {
+      "name": "Morocco",
+      "strength_blind": 0.6202,
+      "strength_aware": 0.7798,
+      "fifa_rank": 7,
+      "group_pts": 7,
+      "narrative": 2,
+      "is_host": false
+    },
+    {
+      "name": "Norway",
+      "strength_blind": 0.2996,
+      "strength_aware": 0.5171,
+      "fifa_rank": 31,
+      "group_pts": 6,
+      "narrative": 2,
+      "is_host": false
+    },
+    {
+      "name": "Spain",
+      "strength_blind": 0.9273,
+      "strength_aware": 1.2575,
+      "fifa_rank": 2,
+      "group_pts": 7,
+      "narrative": 1,
+      "is_host": false
+    },
+    {
+      "name": "Switzerland",
+      "strength_blind": 0.3833,
+      "strength_aware": 0.4865,
+      "fifa_rank": 19,
+      "group_pts": 7,
+      "narrative": 1,
+      "is_host": false
+    }
+  ],
+  "quarterfinals": [
+    {
+      "team_a": "France",
+      "team_b": "Morocco",
+      "pA_blind": 0.6255,
+      "pB_blind": 0.3745,
+      "pA_aware": 0.6645,
+      "pB_aware": 0.3355,
+      "predicted_blind": "France",
+      "predicted_aware": "France",
+      "slot": "QF1",
+      "date": "2026-07-09",
+      "rationale_blind": "France favored on World Cup titles; France favored on FIFA ranking points",
+      "rationale_aware": "France favored on World Cup titles; France favored on FIFA ranking points"
+    },
+    {
+      "team_a": "Spain",
+      "team_b": "Belgium",
+      "pA_blind": 0.6681,
+      "pB_blind": 0.3319,
+      "pA_aware": 0.6929,
+      "pB_aware": 0.3071,
+      "predicted_blind": "Spain",
+      "predicted_aware": "Spain",
+      "slot": "QF2",
+      "date": "2026-07-10",
+      "rationale_blind": "Spain favored on FIFA ranking points; Spain favored on storyline",
+      "rationale_aware": "Spain favored on FIFA ranking points; Spain favored on storyline"
+    },
+    {
+      "team_a": "Norway",
+      "team_b": "England",
+      "pA_blind": 0.4117,
+      "pB_blind": 0.5883,
+      "pA_aware": 0.4117,
+      "pB_aware": 0.5883,
+      "predicted_blind": "England",
+      "predicted_aware": "England",
+      "slot": "QF3",
+      "date": "2026-07-10",
+      "rationale_blind": "England favored on FIFA ranking points; Norway favored on storyline",
+      "rationale_aware": "England favored on FIFA ranking points; Norway favored on storyline"
+    },
+    {
+      "team_a": "Argentina",
+      "team_b": "Switzerland",
+      "pA_blind": 0.7036,
+      "pB_blind": 0.2964,
+      "pA_aware": 0.7036,
+      "pB_aware": 0.2964,
+      "predicted_blind": "Argentina",
+      "predicted_aware": "Argentina",
+      "slot": "QF4",
+      "date": "2026-07-11",
+      "rationale_blind": "Argentina favored on FIFA ranking points; Argentina favored on World Cup titles",
+      "rationale_aware": "Argentina favored on FIFA ranking points; Argentina favored on World Cup titles"
+    }
+  ],
+  "semifinals": [
+    {
+      "team_a": "France",
+      "team_b": "Spain",
+      "pA_blind": 0.5513,
+      "pB_blind": 0.4487,
+      "pA_aware": 0.5513,
+      "pB_aware": 0.4487,
+      "predicted_blind": "France",
+      "predicted_aware": "France",
+      "slot": "SF1",
+      "rationale_blind": "France favored on group-stage points; France favored on World Cup titles",
+      "rationale_aware": "France favored on group-stage points; France favored on World Cup titles"
+    },
+    {
+      "team_a": "England",
+      "team_b": "Argentina",
+      "pA_blind": 0.3564,
+      "pB_blind": 0.6436,
+      "pA_aware": 0.383,
+      "pB_aware": 0.617,
+      "predicted_blind": "Argentina",
+      "predicted_aware": "Argentina",
+      "slot": "SF2",
+      "rationale_blind": "Argentina favored on World Cup titles; Argentina favored on group-stage points",
+      "rationale_aware": "Argentina favored on World Cup titles; Argentina favored on group-stage points"
+    }
+  ],
+  "final": {
+    "team_a": "France",
+    "team_b": "Argentina",
+    "pA_blind": 0.4714,
+    "pB_blind": 0.5286,
+    "pA_aware": 0.5281,
+    "pB_aware": 0.4719,
+    "predicted_blind": "Argentina",
+    "predicted_aware": "France",
+    "rationale_blind": "Argentina favored on World Cup titles; Argentina favored on continental titles",
+    "rationale_aware": "France favored on extra-time/penalty escapes (fragility); France favored on knockout-round goal difference"
+  },
+  "champion_blind": "Argentina",
+  "champion_aware": "France",
+  "bracket_agrees": true,
+  "monte_carlo": {
+    "blind": {
+      "Argentina": {
+        "sf_pct": 70.57,
+        "final_pct": 46.87,
+        "champion_pct": 27.75
+      },
+      "Belgium": {
+        "sf_pct": 34.1,
+        "final_pct": 10.83,
+        "champion_pct": 3.97
+      },
+      "England": {
+        "sf_pct": 58.69,
+        "final_pct": 25.15,
+        "champion_pct": 11.31
+      },
+      "France": {
+        "sf_pct": 62.68,
+        "final_pct": 38.18,
+        "champion_pct": 22.07
+      },
+      "Morocco": {
+        "sf_pct": 37.32,
+        "final_pct": 18.41,
+        "champion_pct": 8.39
+      },
+      "Norway": {
+        "sf_pct": 41.31,
+        "final_pct": 14.36,
+        "champion_pct": 4.8
+      },
+      "Spain": {
+        "sf_pct": 65.9,
+        "final_pct": 32.58,
+        "champion_pct": 16.57
+      },
+      "Switzerland": {
+        "sf_pct": 29.43,
+        "final_pct": 13.62,
+        "champion_pct": 5.14
+      }
+    },
+    "aware": {
+      "Argentina": {
+        "sf_pct": 70.57,
+        "final_pct": 45.11,
+        "champion_pct": 24.48
+      },
+      "Belgium": {
+        "sf_pct": 31.59,
+        "final_pct": 9.53,
+        "champion_pct": 3.68
+      },
+      "England": {
+        "sf_pct": 58.69,
+        "final_pct": 26.66,
+        "champion_pct": 11.31
+      },
+      "France": {
+        "sf_pct": 66.6,
+        "final_pct": 40.84,
+        "champion_pct": 25.22
+      },
+      "Morocco": {
+        "sf_pct": 33.4,
+        "final_pct": 15.05,
+        "champion_pct": 6.99
+      },
+      "Norway": {
+        "sf_pct": 41.31,
+        "final_pct": 15.37,
+        "champion_pct": 4.94
+      },
+      "Spain": {
+        "sf_pct": 68.41,
+        "final_pct": 34.58,
+        "champion_pct": 19.26
+      },
+      "Switzerland": {
+        "sf_pct": 29.43,
+        "final_pct": 12.86,
+        "champion_pct": 4.12
+      }
+    },
+    "runs": 10000
+  },
+  "validation": {
+    "note": "Backbone (blind) graded on all 24 completed R32+R16 games; zero knockout-outcome fitting.",
+    "n": 24,
+    "n_correct": 18,
+    "accuracy": 0.75,
+    "brier": 0.1801793140532315,
+    "log_loss": 0.5427453432856199,
+    "r16_form_comparison": {
+      "n": 8,
+      "form_blind_accuracy": 0.5,
+      "form_blind_n_correct": 4,
+      "form_aware_accuracy": 0.5,
+      "form_aware_n_correct": 4
+    }
+  }
+}

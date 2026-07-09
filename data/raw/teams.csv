@@ -1,0 +1,49 @@
+team,group,group_position,advanced_to_r32,advanced_to_r16,advanced_to_qf,eliminated_in
+Mexico,A,1st,True,True,False,Round of 16
+South Africa,A,2nd,True,False,False,Round of 32
+South Korea,A,3rd,False,False,False,Group Stage
+Czechia,A,4th,False,False,False,Group Stage
+Switzerland,B,1st,True,True,True,
+Canada,B,2nd,True,True,False,Round of 16
+Bosnia and Herzegovina,B,3rd,True,False,False,Round of 32
+Qatar,B,4th,False,False,False,Group Stage
+Brazil,C,1st,True,True,False,Round of 16
+Morocco,C,2nd,True,True,True,
+Scotland,C,3rd,False,False,False,Group Stage
+Haiti,C,4th,False,False,False,Group Stage
+USA,D,1st,True,True,False,Round of 16
+Australia,D,2nd,True,False,False,Round of 32
+Paraguay,D,3rd,True,True,False,Round of 16
+Turkiye,D,4th,False,False,False,Group Stage
+Germany,E,1st,True,False,False,Round of 32
+Ivory Coast,E,2nd,True,False,False,Round of 32
+Ecuador,E,3rd,True,False,False,Round of 32
+Curacao,E,4th,False,False,False,Group Stage
+Netherlands,F,1st,True,False,False,Round of 32
+Japan,F,2nd,True,False,False,Round of 32
+Sweden,F,3rd,True,False,False,Round of 32
+Tunisia,F,4th,False,False,False,Group Stage
+Belgium,G,1st,True,True,True,
+Egypt,G,2nd,True,True,False,Round of 16
+Iran,G,3rd,False,False,False,Group Stage
+New Zealand,G,4th,False,False,False,Group Stage
+Spain,H,1st,True,True,True,
+Cape Verde,H,2nd,True,False,False,Round of 32
+Uruguay,H,3rd,False,False,False,Group Stage
+Saudi Arabia,H,4th,False,False,False,Group Stage
+France,I,1st,True,True,True,
+Norway,I,2nd,True,True,True,
+Senegal,I,3rd,True,False,False,Round of 32
+Iraq,I,4th,False,False,False,Group Stage
+Argentina,J,1st,True,True,True,
+Austria,J,2nd,True,False,False,Round of 32
+Algeria,J,3rd,True,False,False,Round of 32
+Jordan,J,4th,False,False,False,Group Stage
+Colombia,K,1st,True,True,False,Round of 16
+Portugal,K,2nd,True,True,False,Round of 16
+DR Congo,K,3rd,True,False,False,Round of 32
+Uzbekistan,K,4th,False,False,False,Group Stage
+England,L,1st,True,True,True,
+Croatia,L,2nd,True,False,False,Round of 32
+Ghana,L,3rd,True,False,False,Round of 32
+Panama,L,4th,False,False,False,Group Stage

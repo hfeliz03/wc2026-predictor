@@ -1,0 +1,57 @@
+{
+  "method": "backbone_handset_weights",
+  "note": "form_blind_features is graded on all 24 R32+R16 games with zero knockout-outcome signal (Milestone 5 audit). full_features adds knockout form and is what Milestone 6 uses for QF/SF/Final predictions, since R32+R16 are real completed results by then, not a leak.",
+  "form_blind_features": [
+    "fifa_points",
+    "wc_titles",
+    "major_trophies",
+    "narrative",
+    "group_pts",
+    "group_gd",
+    "rank_vs_expectation",
+    "is_host"
+  ],
+  "full_features": [
+    "fifa_points",
+    "wc_titles",
+    "major_trophies",
+    "narrative",
+    "group_pts",
+    "group_gd",
+    "rank_vs_expectation",
+    "is_host",
+    "ko_wins",
+    "ko_losses",
+    "ko_gd",
+    "ko_fragile"
+  ],
+  "weights": {
+    "fifa_points": 0.25,
+    "wc_titles": 0.1,
+    "major_trophies": 0.05,
+    "narrative": 0.05,
+    "group_pts": 0.15,
+    "group_gd": 0.1,
+    "rank_vs_expectation": 0.1,
+    "ko_wins": 0.08,
+    "ko_losses": 0.08,
+    "ko_gd": 0.09,
+    "ko_fragile": -0.05,
+    "is_host": 0.05
+  },
+  "logistic_k": 1.0,
+  "form_blind_test_metrics": {
+    "n": 24,
+    "n_correct": 18,
+    "accuracy": 0.75,
+    "brier": 0.1801793140532315,
+    "log_loss": 0.5427453432856199
+  },
+  "r16_form_comparison": {
+    "n": 8,
+    "form_blind_accuracy": 0.5,
+    "form_blind_n_correct": 4,
+    "form_aware_accuracy": 0.5,
+    "form_aware_n_correct": 4
+  }
+}

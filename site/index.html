@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WC2026 Knockout Predictor</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <h1>WC2026 Knockout Predictor</h1>
+    <p class="hero-sub" id="hero-sub">Loading predictions&hellip;</p>
+
+    <div class="model-toggle" role="radiogroup" aria-label="Model selector">
+      <button class="toggle-btn active" data-model="aware" id="btn-aware">Aware</button>
+      <button class="toggle-btn" data-model="blind" id="btn-blind">Blind</button>
+    </div>
+    <p class="toggle-help" id="toggle-help"></p>
+
+    <div class="champion-row" id="champion-row"></div>
+  </div>
+</header>
+
+<main>
+
+  <section class="panel" id="bracket-section">
+    <h2>Bracket</h2>
+    <p class="panel-sub">Quarterfinals July 9&ndash;11 &middot; Semifinals July 14&ndash;15 &middot; Final July 19</p>
+    <div class="bracket" id="bracket"></div>
+  </section>
+
+  <section class="panel" id="matchups-section">
+    <h2>Matchup detail</h2>
+    <div class="matchup-grid" id="matchup-grid"></div>
+  </section>
+
+  <section class="panel" id="scorecard-section">
+    <h2>Model scorecard</h2>
+    <div class="scorecard" id="scorecard"></div>
+  </section>
+
+  <section class="panel" id="montecarlo-section">
+    <h2>Monte Carlo &mdash; 10,000 simulated brackets</h2>
+    <p class="panel-sub">Chance to reach the semifinal, the final, and to win the cup, under each model.</p>
+    <div class="table-wrap">
+      <table id="mc-table">
+        <thead>
+          <tr>
+            <th>Team</th>
+            <th colspan="2">Reach SF</th>
+            <th colspan="2">Reach Final</th>
+            <th colspan="2">Champion</th>
+          </tr>
+          <tr class="sub-head">
+            <th></th>
+            <th class="c-blind">blind</th><th class="c-aware">aware</th>
+            <th class="c-blind">blind</th><th class="c-aware">aware</th>
+            <th class="c-blind">blind</th><th class="c-aware">aware</th>
+          </tr>
+        </thead>
+        <tbody id="mc-tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p id="footer-note"></p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
