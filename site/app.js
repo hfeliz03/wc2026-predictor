@@ -292,16 +292,24 @@ function initials(name) {
 // avatar, and if one of these URLs ever breaks (a Commons file gets renamed
 // or deleted), the onerror handler below swaps it for the initials avatar
 // live in the browser rather than showing a broken-image icon.
+// Uses Wikimedia's Special:FilePath redirect rather than a hand-built
+// upload.wikimedia.org/.../thumb/<hash>/<hash2>/... URL - that scheme
+// requires computing an MD5 hash of the exact filename ourselves, which is
+// one more way to get a working photo silently wrong. Special:FilePath just
+// takes the filename and redirects to the right file server-side.
+function commonsFile(filename, width) {
+  return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(filename).replace(/%20/g, "_")}?width=${width}`;
+}
 const PLAYER_PHOTOS = {
-  "Lionel Messi": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lionel_Messi_20180626.jpg/200px-Lionel_Messi_20180626.jpg",
-  "Kylian Mbappe": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Kylian_Mbapp%C3%A9.jpg/200px-Kylian_Mbapp%C3%A9.jpg",
-  "Erling Haaland": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Erling_Haaland_2023_%28cropped%29.jpg/200px-Erling_Haaland_2023_%28cropped%29.jpg",
-  "Michael Olise": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Michael_Olise_France_v_Senegal_16_June_2026-307_%28cropped%29.jpg/200px-Michael_Olise_France_v_Senegal_16_June_2026-307_%28cropped%29.jpg",
-  "Brahim Diaz": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Brahim_Diaz_vs_Niger_%28cropped%29_%28cropped%29.jpg/200px-Brahim_Diaz_vs_Niger_%28cropped%29_%28cropped%29.jpg",
-  "Bukayo Saka": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Bukayo_Saka.jpg/200px-Bukayo_Saka.jpg",
-  "Unai Simon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Unai_Sim%C3%B3n_Mendibil.jpg/200px-Unai_Sim%C3%B3n_Mendibil.jpg",
-  "Mike Maignan": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Mike_Maignan_2022_Salzburg_vs_AC_Milan_2022-09-06.jpg/200px-Mike_Maignan_2022_Salzburg_vs_AC_Milan_2022-09-06.jpg",
-  "Camilo Vargas": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Camilo_Vargas_2022.jpeg/200px-Camilo_Vargas_2022.jpeg",
+  "Lionel Messi": commonsFile("Lionel Messi 20180626.jpg", 200),
+  "Kylian Mbappe": commonsFile("Kylian Mbappé.jpg", 200),
+  "Erling Haaland": commonsFile("Erling Haaland 2023 (cropped).jpg", 200),
+  "Michael Olise": commonsFile("Michael Olise France v Senegal 16 June 2026-307 (cropped).jpg", 200),
+  "Brahim Diaz": commonsFile("Brahim Diaz vs Niger (cropped) (cropped).jpg", 200),
+  "Bukayo Saka": commonsFile("Bukayo Saka.jpg", 200),
+  "Unai Simon": commonsFile("Unai Simón Mendibil.jpg", 200),
+  "Mike Maignan": commonsFile("Mike Maignan 2022 Salzburg vs AC Milan 2022-09-06.jpg", 200),
+  "Camilo Vargas": commonsFile("Camilo Vargas 2022.jpeg", 200),
 };
 
 function avatarMarkup(player, sizeClass) {
@@ -309,8 +317,15 @@ function avatarMarkup(player, sizeClass) {
   const initialsHTML = `<div class="${cls}" style="background:${avatarColor(player)}">${initials(player)}</div>`;
   const photo = PLAYER_PHOTOS[player];
   if (!photo) return initialsHTML;
-  const fallback = initialsHTML.replace(/'/g, "&#39;");
-  return `<img class="${cls} avatar-photo" src="${photo}" alt="${player}" loading="lazy" onerror="this.outerHTML='${fallback}'">`;
+  // Escaping both quote characters matters here: the onerror value below is
+  // itself inside a double-quoted HTML attribute, so any literal " or ' from
+  // initialsHTML (its class="..." and style="..." attributes) would either
+  // terminate the outer attribute early or break the embedded JS string -
+  // either way silently mangling the markup for every avatar, image URLs
+  // notwithstanding. HTML entities decode back to real quotes before the
+  // browser runs the onerror JS, so this round-trips correctly.
+  const fallback = initialsHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  return `<img class="${cls} avatar-photo" src="${photo}" alt="${player}" loading="lazy" onerror="this.onerror=null;this.outerHTML='${fallback}'">`;
 }
 
 const STAT_LABELS = { goals: "goals", assists: "assists", clean_sheets: "clean sheets" };
