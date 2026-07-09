@@ -286,12 +286,17 @@ function initials(name) {
   return ((parts[0]?.[0] || "") + (parts[parts.length - 1]?.[0] || "")).toUpperCase();
 }
 
-// Headshots for the players who currently show up on the podiums, sourced
-// from Wikimedia Commons (CC-licensed - credited in the footer). Only the
-// podium top-3 per award are covered here; everyone else keeps the initials
-// avatar, and if one of these URLs ever breaks (a Commons file gets renamed
-// or deleted), the onerror handler below swaps it for the initials avatar
-// live in the browser rather than showing a broken-image icon.
+// Headshots sourced from Wikimedia Commons (CC-licensed - credited in the
+// footer), one per award-table player where a search turned up a filename
+// confirmed by an actual search result link (not just paraphrased in a
+// summary - that's what went wrong with the first Brahim Diaz attempt, which
+// guessed "vs Niger (cropped) (cropped)" when the real file was "3 vs
+// Niger (cropped) (cropped)"). A handful of players (Schjelderup, Alvarado,
+// Rangel, Kobel, Sarr) don't have a confidently-confirmed file and are left
+// out here on purpose - they get the initials avatar instead of a guess.
+// If any of these URLs ever breaks (a Commons file gets renamed or
+// deleted), the onerror handler below swaps it for the initials avatar live
+// in the browser rather than showing a broken-image icon.
 // Uses Wikimedia's Special:FilePath redirect rather than a hand-built
 // upload.wikimedia.org/.../thumb/<hash>/<hash2>/... URL - that scheme
 // requires computing an MD5 hash of the exact filename ourselves, which is
@@ -301,15 +306,33 @@ function commonsFile(filename, width) {
   return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(filename).replace(/%20/g, "_")}?width=${width}`;
 }
 const PLAYER_PHOTOS = {
+  // Golden Boot
   "Lionel Messi": commonsFile("Lionel Messi 20180626.jpg", 200),
   "Kylian Mbappe": commonsFile("Kylian Mbappé.jpg", 200),
   "Erling Haaland": commonsFile("Erling Haaland 2023 (cropped).jpg", 200),
+  "Harry Kane": commonsFile("Harry Kane.jpg", 200),
+  "Ousmane Dembele": commonsFile("Ousmane Dembélé 2018 (cropped).jpg", 200),
+  "Mikel Oyarzabal": commonsFile("Mikel Oyarzabal.jpg", 200),
+  "Jude Bellingham": commonsFile("Jude Bellingham 2020 (cropped2).jpg", 200),
+  "Vinicius Junior": commonsFile("Vinicius Jr 2021.jpg", 200),
+  "Julian Quinones": commonsFile("Julián Quiñones.png", 200),
+  // Top Assists
   "Michael Olise": commonsFile("Michael Olise France v Senegal 16 June 2026-307 (cropped).jpg", 200),
-  "Brahim Diaz": commonsFile("Brahim Diaz vs Niger (cropped) (cropped).jpg", 200),
+  "Brahim Diaz": commonsFile("Brahim Diaz 3 vs Niger (cropped) (cropped).jpg", 200),
   "Bukayo Saka": commonsFile("Bukayo Saka.jpg", 200),
+  "Bruno Guimaraes": commonsFile("Bruno Guimarães.png", 200),
+  "Martin Odegaard": commonsFile("Martin Odegaard Morocco v Norway 7 June 2026-56 (cropped).jpg", 200),
+  "Alexander Isak": commonsFile("Alexander Isak (training 2016, cropped 1).jpg", 200),
+  "Florian Wirtz": commonsFile("Florian Wirtz 2024.jpg", 200),
+  // Golden Glove
   "Unai Simon": commonsFile("Unai Simón Mendibil.jpg", 200),
   "Mike Maignan": commonsFile("Mike Maignan 2022 Salzburg vs AC Milan 2022-09-06.jpg", 200),
   "Camilo Vargas": commonsFile("Camilo Vargas 2022.jpeg", 200),
+  "Emiliano Martinez": commonsFile("1 Emiliano Martínez 2018 (cropped).jpg", 200),
+  "Jordan Pickford": commonsFile("Jordan Pickford 2018 (cropped).jpg", 200),
+  "Yassine Bounou": commonsFile("Yassine bounou Interview 2023.jpg", 200),
+  "Diogo Costa": commonsFile("Diogo Costa.jpg", 200),
+  "Thibaut Courtois": commonsFile("Thibaut Courtois - 02 (cropped).jpg", 200),
 };
 
 function avatarMarkup(player, sizeClass) {
