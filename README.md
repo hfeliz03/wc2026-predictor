@@ -54,6 +54,19 @@ their current tally, since it's frozen. The podium and table both rank by
 this projection; the table still shows the current (non-projected) number
 alongside it.
 
+## Cache-busting
+
+`index.html` loads `app.js`/`styles.css` with a `?v=N` query param, and
+`app.js` fetches `predictions.json` with `?_=<timestamp>` and `cache:
+"no-store"`. Browsers (and GitHub Pages' CDN) can otherwise serve a stale
+`app.js` alongside fresh HTML/data, which is confusing in a very specific
+way: old rendering code silently misaligns with new data/markup rather
+than erroring, so a table column can end up showing the wrong stat
+entirely. **Bump the `?v=` number in `index.html` any time `app.js` or
+`styles.css` changes.** If something looks visually stale despite a fresh
+push, hard-refresh (Cmd+Shift+R / Ctrl+Shift+R) before assuming it's a code
+bug.
+
 ## Setup
 
 ```bash

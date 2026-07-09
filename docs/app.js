@@ -31,7 +31,13 @@ let MODEL = "aware";
 
 async function main() {
   try {
-    const res = await fetch("./predictions.json");
+    // Cache-bust: predictions.json changes every round, so it must never be
+    // served stale from browser/CDN cache (this bit us once already - a
+    // stale cached app.js earlier in the day caused genuinely confusing
+    // mis-rendered output, e.g. an "assists" value appearing under a
+    // "Projected" header). no-store + a timestamp param covers both
+    // fetch-level and URL-level caching.
+    const res = await fetch("./predictions.json?_=" + Date.now(), { cache: "no-store" });
     DATA = await res.json();
   } catch (e) {
     document.getElementById("hero-sub").textContent =
