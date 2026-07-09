@@ -98,15 +98,16 @@ function render() {
   renderChampions();
   renderBracket();
   renderMatchups();
-  renderScorecard();
+  // renderScorecard(); - Model scorecard section is disabled per feedback
+  // (see the matching commented-out block in index.html); leaving the
+  // function defined below in case this comes back later.
   renderMonteCarlo();
   renderAwards();
   renderFooter();
 }
 
 function renderHero() {
-  document.getElementById("hero-sub").textContent =
-    `Generated ${DATA.generated_at} · backbone rating + logistic calibration, graded on all 24 completed Round of 32 + Round of 16 games.`;
+  document.getElementById("hero-sub").textContent = `Generated ${DATA.generated_at}`;
   document.getElementById("toggle-help").textContent = MODEL === "aware"
     ? "Aware: pre-tournament + group-stage signal, plus each team's already-completed knockout form (R32 + R16). Using real, already-known results to inform later rounds - not leakage."
     : "Blind: pre-tournament + group-stage signal only. Never touches any knockout-round outcome. This is the version graded at 75% accuracy on all 24 R32+R16 games.";
@@ -222,9 +223,6 @@ function matchupCard(g, stageLabel, i) {
       <div class="prob-label"><span>Aware</span><span>${Math.round(g.pA_aware*100)}% / ${Math.round(g.pB_aware*100)}%</span></div>
       <div class="prob-bar aware"><div class="fill-a" data-w="${g.pA_aware*100}" style="width:0%"></div></div>
     </div>
-
-    <div class="rationale"><b>Blind:</b> ${g.rationale_blind}</div>
-    <div class="rationale"><b>Aware:</b> ${g.rationale_aware}</div>
   </div>`;
 }
 
@@ -329,8 +327,6 @@ function awardRow(p, statKey, otherKey) {
 function renderAwards() {
   const a = DATA.awards;
   if (!a) return;
-
-  document.getElementById("awards-sub").textContent = a.note;
 
   const gb = a.golden_boot_projected;
   document.getElementById("golden-boot-podium").innerHTML =

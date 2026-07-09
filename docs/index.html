@@ -40,13 +40,18 @@
     <div class="matchup-grid" id="matchup-grid"></div>
   </section>
 
+  <!-- Model scorecard section disabled per feedback (felt like clutter for
+       a non-technical reader) - left here, commented out, in case it's
+       wanted back later. The matching render call is commented out in
+       app.js too.
   <section class="panel" id="scorecard-section">
     <h2>Model scorecard</h2>
     <div class="scorecard" id="scorecard"></div>
   </section>
+  -->
 
   <section class="panel" id="montecarlo-section">
-    <h2>Monte Carlo &mdash; 10,000 simulated brackets</h2>
+    <h2>10,000 simulated brackets</h2>
     <p class="panel-sub">Chance to reach the semifinal, the final, and to win the cup, under each model.</p>
     <div class="table-wrap">
       <table id="mc-table">
@@ -71,10 +76,8 @@
 
   <section class="panel" id="awards-section">
     <h2>Awards</h2>
-    <p class="panel-sub" id="awards-sub"></p>
 
-    <h3 class="award-heading">Golden Boot &mdash; projected winner</h3>
-    <p class="panel-sub">Podium ranks by projected final tally; the table shows current standings alongside the projection.</p>
+    <h3 class="award-heading">Golden Boot</h3>
     <div class="podium" id="golden-boot-podium"></div>
     <div class="table-wrap">
       <table class="award-table">
@@ -83,7 +86,7 @@
       </table>
     </div>
 
-    <h3 class="award-heading">Top Assists &mdash; projected winner</h3>
+    <h3 class="award-heading">Top Assists</h3>
     <div class="podium" id="top-assists-podium"></div>
     <div class="table-wrap">
       <table class="award-table">
@@ -92,8 +95,7 @@
       </table>
     </div>
 
-    <h3 class="award-heading">Golden Glove &mdash; projected winner</h3>
-    <p class="panel-sub">Clean sheets through the Round of 16, projected forward the same way.</p>
+    <h3 class="award-heading">Golden Glove</h3>
     <div class="podium" id="golden-glove-podium"></div>
     <div class="table-wrap">
       <table class="award-table">
@@ -109,6 +111,6 @@
   <p id="footer-note"></p>
 </footer>
 
-<script src="app.js?v=5"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>
