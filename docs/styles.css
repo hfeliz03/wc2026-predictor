@@ -739,6 +739,12 @@ tbody tr:hover td:first-child { color: var(--gold); }
 
 .avatar-sm { width: 30px; height: 30px; font-size: 12px; margin: 0; border-width: 1px; }
 
+.avatar-photo {
+  object-fit: cover;
+  object-position: center 22%;
+  background: var(--bg-panel);
+}
+
 .podium-name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
 .podium-team {
   color: var(--text-dim);
@@ -788,6 +794,8 @@ footer {
   padding: 24px;
   border-top: 1px solid var(--border);
 }
+footer .photo-credit { font-size: 11px; margin-top: 6px; opacity: 0.7; }
+footer .photo-credit a { color: var(--text-dim); text-decoration: underline; }
 
 @media (max-width: 720px) {
   .bracket { grid-template-columns: 1fr; }

@@ -273,9 +273,8 @@ function renderMonteCarlo() {
   document.getElementById("mc-tbody").innerHTML = rows;
 }
 
-// No real player photos are available in this build (see README) - each
-// player instead gets a deterministic-colored initials avatar so the same
-// player always renders the same way across reloads.
+// Players without a sourced photo (below) still get a deterministic-colored
+// initials avatar, so the same player always renders the same way.
 const AVATAR_COLORS = ["#38bdf8", "#fb923c", "#34d399", "#f472b6", "#a78bfa", "#f4c542", "#fb7185", "#4ade80"];
 function avatarColor(name) {
   let hash = 0;
@@ -285,6 +284,33 @@ function avatarColor(name) {
 function initials(name) {
   const parts = name.trim().split(/\s+/);
   return ((parts[0]?.[0] || "") + (parts[parts.length - 1]?.[0] || "")).toUpperCase();
+}
+
+// Headshots for the players who currently show up on the podiums, sourced
+// from Wikimedia Commons (CC-licensed - credited in the footer). Only the
+// podium top-3 per award are covered here; everyone else keeps the initials
+// avatar, and if one of these URLs ever breaks (a Commons file gets renamed
+// or deleted), the onerror handler below swaps it for the initials avatar
+// live in the browser rather than showing a broken-image icon.
+const PLAYER_PHOTOS = {
+  "Lionel Messi": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Lionel_Messi_20180626.jpg/200px-Lionel_Messi_20180626.jpg",
+  "Kylian Mbappe": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Kylian_Mbapp%C3%A9.jpg/200px-Kylian_Mbapp%C3%A9.jpg",
+  "Erling Haaland": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Erling_Haaland_2023_%28cropped%29.jpg/200px-Erling_Haaland_2023_%28cropped%29.jpg",
+  "Michael Olise": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Michael_Olise_France_v_Senegal_16_June_2026-307_%28cropped%29.jpg/200px-Michael_Olise_France_v_Senegal_16_June_2026-307_%28cropped%29.jpg",
+  "Brahim Diaz": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Brahim_Diaz_vs_Niger_%28cropped%29_%28cropped%29.jpg/200px-Brahim_Diaz_vs_Niger_%28cropped%29_%28cropped%29.jpg",
+  "Bukayo Saka": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Bukayo_Saka.jpg/200px-Bukayo_Saka.jpg",
+  "Unai Simon": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Unai_Sim%C3%B3n_Mendibil.jpg/200px-Unai_Sim%C3%B3n_Mendibil.jpg",
+  "Mike Maignan": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Mike_Maignan_2022_Salzburg_vs_AC_Milan_2022-09-06.jpg/200px-Mike_Maignan_2022_Salzburg_vs_AC_Milan_2022-09-06.jpg",
+  "Camilo Vargas": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Camilo_Vargas_2022.jpeg/200px-Camilo_Vargas_2022.jpeg",
+};
+
+function avatarMarkup(player, sizeClass) {
+  const cls = "avatar" + (sizeClass ? " " + sizeClass : "");
+  const initialsHTML = `<div class="${cls}" style="background:${avatarColor(player)}">${initials(player)}</div>`;
+  const photo = PLAYER_PHOTOS[player];
+  if (!photo) return initialsHTML;
+  const fallback = initialsHTML.replace(/'/g, "&#39;");
+  return `<img class="${cls} avatar-photo" src="${photo}" alt="${player}" loading="lazy" onerror="this.outerHTML='${fallback}'">`;
 }
 
 const STAT_LABELS = { goals: "goals", assists: "assists", clean_sheets: "clean sheets" };
@@ -298,7 +324,7 @@ function podiumCard(p, statKey, i) {
   return `<div class="podium-card rank-${p.projected_rank}" style="--i:${i}">
     <div class="rank-badge">#${p.projected_rank}${changedRank ? ` <span class="rank-was">(now #${p.rank})</span>` : ""}</div>
     <div class="avatar-wrap">
-      <div class="avatar" style="background:${avatarColor(p.player)}">${initials(p.player)}</div>
+      ${avatarMarkup(p.player)}
       <div class="avatar-flag">${flag(p.team)}</div>
     </div>
     <div class="podium-name">${p.player}</div>
@@ -312,7 +338,7 @@ function podiumCard(p, statKey, i) {
 function awardRow(p, statKey, otherKey) {
   const projKey = "projected_" + statKey;
   return `<tr>
-    <td><div class="avatar avatar-sm" style="background:${avatarColor(p.player)}">${initials(p.player)}</div></td>
+    <td>${avatarMarkup(p.player, "avatar-sm")}</td>
     <td>${p.player}</td>
     <td>${flag(p.team)} ${p.team}</td>
     <td>${p[statKey]}</td>
