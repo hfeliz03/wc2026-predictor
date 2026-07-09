@@ -6,25 +6,34 @@
 // knockout-round form). See model/train.py for why both are shown rather
 // than one being picked as definitive.
 
+// Real flag graphics via the flag-icons library (see index.html <link>) instead
+// of emoji, which render inconsistently (or as raw country codes) across OSes.
+// Codes are ISO 3166-1 alpha-2, except England which uses flag-icons' regional
+// "gb-eng" code.
 const FLAGS = {
-  "France": "🇫🇷", "Morocco": "🇲🇦",
-  "Spain": "🇪🇸", "Belgium": "🇧🇪",
-  "Norway": "🇳🇴", "England": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
-  "Argentina": "🇦🇷", "Switzerland": "🇨🇭",
-  "Brazil": "🇧🇷", "Portugal": "🇵🇹",
-  "Mexico": "🇲🇽", "USA": "🇺🇸",
-  "Canada": "🇨🇦", "Egypt": "🇪🇬",
-  "Colombia": "🇨🇴", "Germany": "🇩🇪",
-  "Netherlands": "🇳🇱", "Paraguay": "🇵🇾",
-  "Sweden": "🇸🇪", "Austria": "🇦🇹",
-  "Algeria": "🇩🇿", "Cape Verde": "🇨🇻",
-  "Senegal": "🇸🇳", "DR Congo": "🇨🇩",
-  "Ivory Coast": "🇨🇮", "Croatia": "🇭🇷",
-  "Ghana": "🇬🇭", "Panama": "🇵🇦",
-  "Bosnia and Herzegovina": "🇧🇦", "Uzbekistan": "🇺🇿",
-  "Australia": "🇦🇺", "Japan": "🇯🇵",
+  "France": "fr", "Morocco": "ma",
+  "Spain": "es", "Belgium": "be",
+  "Norway": "no", "England": "gb-eng",
+  "Argentina": "ar", "Switzerland": "ch",
+  "Brazil": "br", "Portugal": "pt",
+  "Mexico": "mx", "USA": "us",
+  "Canada": "ca", "Egypt": "eg",
+  "Colombia": "co", "Germany": "de",
+  "Netherlands": "nl", "Paraguay": "py",
+  "Sweden": "se", "Austria": "at",
+  "Algeria": "dz", "Cape Verde": "cv",
+  "Senegal": "sn", "DR Congo": "cd",
+  "Ivory Coast": "ci", "Croatia": "hr",
+  "Ghana": "gh", "Panama": "pa",
+  "Bosnia and Herzegovina": "ba", "Uzbekistan": "uz",
+  "Australia": "au", "Japan": "jp",
 };
-function flag(team) { return FLAGS[team] || "⚽"; }
+function flag(team) {
+  const code = FLAGS[team];
+  return code
+    ? `<span class="fi fi-${code} flag-icon" title="${team}"></span>`
+    : `<span class="flag-fallback" title="${team}">⚽</span>`;
+}
 
 let DATA = null;
 let MODEL = "aware";
@@ -45,15 +54,43 @@ async function main() {
     return;
   }
   render();
+  positionToggleIndicator();
   document.getElementById("btn-aware").addEventListener("click", () => setModel("aware"));
   document.getElementById("btn-blind").addEventListener("click", () => setModel("blind"));
+  window.addEventListener("resize", positionToggleIndicator);
 }
 
 function setModel(model) {
   MODEL = model;
   document.getElementById("btn-aware").classList.toggle("active", model === "aware");
   document.getElementById("btn-blind").classList.toggle("active", model === "blind");
+  positionToggleIndicator();
   render();
+}
+
+// Slides the little pill behind the active Aware/Blind button instead of
+// just swapping a background color, so switching models feels like a tab
+// transition rather than a hard cut.
+function positionToggleIndicator() {
+  const active = document.querySelector(".toggle-btn.active");
+  const indicator = document.getElementById("toggle-indicator");
+  if (!active || !indicator) return;
+  indicator.style.width = active.offsetWidth + "px";
+  indicator.style.left = active.offsetLeft + "px";
+  indicator.classList.toggle("aware", active.dataset.model === "aware");
+  indicator.classList.toggle("blind", active.dataset.model === "blind");
+}
+
+// Probability/mini bars are rendered at width:0 in the HTML string, then
+// animated up to their real width on the next frame so the transition in
+// CSS actually plays instead of snapping straight to the final value.
+function animateBars(root = document) {
+  const bars = root.querySelectorAll("[data-w]");
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      bars.forEach(el => { el.style.width = el.dataset.w + "%"; });
+    });
+  });
 }
 
 function render() {
@@ -105,8 +142,11 @@ function pickFor(game) {
 
 function bracketTeamRow(team, pct, isWinner) {
   return `<div class="bracket-team ${isWinner ? "winner" : ""}">
-    <span class="name"><span class="flag">${flag(team)}</span>${team}</span>
-    <span class="pct">${pct}%</span>
+    <div class="bracket-team-row">
+      <span class="name"><span class="flag">${flag(team)}</span>${team}</span>
+      <span class="pct">${pct}%</span>
+    </div>
+    <div class="mini-bar"><div class="mini-fill" data-w="${pct}" style="width:0%"></div></div>
   </div>`;
 }
 
@@ -115,24 +155,24 @@ function renderBracket() {
   const sf = DATA.semifinals;
   const final = DATA.final;
 
-  const qfCol = qf.map(g => {
+  const qfCol = qf.map((g, i) => {
     const winner = pickFor(g);
-    return `<div class="bracket-card">
+    return `<div class="bracket-card" style="--i:${i}">
       ${bracketTeamRow(g.team_a, pctFor(g, "a"), winner === g.team_a)}
       ${bracketTeamRow(g.team_b, pctFor(g, "b"), winner === g.team_b)}
     </div>`;
   }).join("");
 
-  const sfCol = sf.map(g => {
+  const sfCol = sf.map((g, i) => {
     const winner = pickFor(g);
-    return `<div class="bracket-card">
+    return `<div class="bracket-card" style="--i:${i + 1}">
       ${bracketTeamRow(g.team_a, pctFor(g, "a"), winner === g.team_a)}
       ${bracketTeamRow(g.team_b, pctFor(g, "b"), winner === g.team_b)}
     </div>`;
   }).join("");
 
   const finalWinner = pickFor(final);
-  const finalCard = `<div class="bracket-card final-card">
+  const finalCard = `<div class="bracket-card final-card" style="--i:2">
     ${bracketTeamRow(final.team_a, pctFor(final, "a"), finalWinner === final.team_a)}
     ${bracketTeamRow(final.team_b, pctFor(final, "b"), finalWinner === final.team_b)}
     <div style="text-align:center; margin-top:8px; font-size:22px;">🏆 ${flag(finalWinner)} ${finalWinner}</div>
@@ -143,6 +183,7 @@ function renderBracket() {
     <div class="bracket-col round-sf"><h3>Semifinals</h3>${sfCol}</div>
     <div class="bracket-col round-final"><h3>Final</h3>${finalCard}</div>
   `;
+  animateBars(document.getElementById("bracket"));
 
   if (DATA.bracket_agrees === false) {
     document.getElementById("bracket").insertAdjacentHTML("beforebegin",
@@ -162,23 +203,24 @@ function resultBadge(g) {
   </div>`;
 }
 
-function matchupCard(g, stageLabel) {
-  return `<div class="matchup-card${g.played ? " played" : ""}">
+function matchupCard(g, stageLabel, i) {
+  return `<div class="matchup-card${g.played ? " played" : ""}" style="--i:${i}">
     <span class="stage-tag">${stageLabel}${g.date ? " · " + g.date : ""}</span>
     <div class="matchup-teams">
-      <span>${flag(g.team_a)} ${g.team_a}</span>
-      <span>${flag(g.team_b)} ${g.team_b}</span>
+      <span class="team-side side-a">${flag(g.team_a)}<span class="team-name">${g.team_a}</span></span>
+      <span class="matchup-vs">VS</span>
+      <span class="team-side side-b">${flag(g.team_b)}<span class="team-name">${g.team_b}</span></span>
     </div>
 
     ${resultBadge(g)}
 
     <div class="prob-row">
       <div class="prob-label"><span>Blind</span><span>${Math.round(g.pA_blind*100)}% / ${Math.round(g.pB_blind*100)}%</span></div>
-      <div class="prob-bar blind"><div class="fill-a" style="width:${g.pA_blind*100}%"></div></div>
+      <div class="prob-bar blind"><div class="fill-a" data-w="${g.pA_blind*100}" style="width:0%"></div></div>
     </div>
     <div class="prob-row">
       <div class="prob-label"><span>Aware</span><span>${Math.round(g.pA_aware*100)}% / ${Math.round(g.pB_aware*100)}%</span></div>
-      <div class="prob-bar aware"><div class="fill-a" style="width:${g.pA_aware*100}%"></div></div>
+      <div class="prob-bar aware"><div class="fill-a" data-w="${g.pA_aware*100}" style="width:0%"></div></div>
     </div>
 
     <div class="rationale"><b>Blind:</b> ${g.rationale_blind}</div>
@@ -187,39 +229,43 @@ function matchupCard(g, stageLabel) {
 }
 
 function renderMatchups() {
+  let i = 0;
   const cards = [
-    ...DATA.quarterfinals.map(g => matchupCard(g, "Quarterfinal")),
-    ...DATA.semifinals.map(g => matchupCard(g, "Semifinal")),
-    matchupCard(DATA.final, "Final"),
+    ...DATA.quarterfinals.map(g => matchupCard(g, "Quarterfinal", i++)),
+    ...DATA.semifinals.map(g => matchupCard(g, "Semifinal", i++)),
+    matchupCard(DATA.final, "Final", i++),
   ];
-  document.getElementById("matchup-grid").innerHTML = cards.join("");
+  const grid = document.getElementById("matchup-grid");
+  grid.innerHTML = cards.join("");
+  animateBars(grid);
 }
 
 function renderScorecard() {
   const v = DATA.validation;
   const r16 = v.r16_form_comparison || {};
+  let i = 0;
 
   const liveCards = Object.entries(v.live_rounds || {}).map(([roundKey, g]) => `
-    <div class="stat-card">
+    <div class="stat-card" style="--i:${i++}">
       <div class="stat-value">${g.aware.n_correct}/${g.n}</div>
       <div class="stat-label">${g.stage} so far, aware model (blind: ${g.blind.n_correct}/${g.n})${g.n < g.n_total_in_round ? ` — ${g.n}/${g.n_total_in_round} played` : ""}</div>
     </div>`).join("");
 
   document.getElementById("scorecard").innerHTML = `
-    <div class="stat-card"><div class="stat-value">${Math.round(v.accuracy*100)}%</div><div class="stat-label">Accuracy on all ${v.n} completed R32+R16 games (blind model)</div></div>
-    <div class="stat-card"><div class="stat-value">${v.n_correct}/${v.n}</div><div class="stat-label">Games called correctly</div></div>
-    <div class="stat-card"><div class="stat-value">${r16.form_aware_n_correct ?? "?"}/${r16.n ?? 8}</div><div class="stat-label">R16-only, aware model (blind: ${r16.form_blind_n_correct ?? "?"}/${r16.n ?? 8}) - the round with the most upsets</div></div>
+    <div class="stat-card" style="--i:${i++}"><div class="stat-value">${Math.round(v.accuracy*100)}%</div><div class="stat-label">Accuracy on all ${v.n} completed R32+R16 games (blind model)</div></div>
+    <div class="stat-card" style="--i:${i++}"><div class="stat-value">${v.n_correct}/${v.n}</div><div class="stat-label">Games called correctly</div></div>
+    <div class="stat-card" style="--i:${i++}"><div class="stat-value">${r16.form_aware_n_correct ?? "?"}/${r16.n ?? 8}</div><div class="stat-label">R16-only, aware model (blind: ${r16.form_blind_n_correct ?? "?"}/${r16.n ?? 8}) - the round with the most upsets</div></div>
     ${liveCards}
-    // <div class="scorecard-note">${DATA.method_note}</div>
+    <div class="scorecard-note">${DATA.method_note}</div>
   `;
 }
 
 function renderMonteCarlo() {
   const mc = DATA.monte_carlo;
   const teams = Object.keys(mc.aware).sort((a,b) => mc.aware[b].champion_pct - mc.aware[a].champion_pct);
-  const rows = teams.map(t => {
+  const rows = teams.map((t, i) => {
     const b = mc.blind[t], a = mc.aware[t];
-    return `<tr>
+    return `<tr style="--i:${i}">
       <td>${flag(t)} ${t}</td>
       <td>${b.sf_pct}%</td><td>${a.sf_pct}%</td>
       <td>${b.final_pct}%</td><td>${a.final_pct}%</td>
@@ -245,17 +291,20 @@ function initials(name) {
 
 const STAT_LABELS = { goals: "goals", assists: "assists", clean_sheets: "clean sheets" };
 
-function podiumCard(p, statKey) {
+function podiumCard(p, statKey, i) {
   const projKey = "projected_" + statKey;
   const statLabel = STAT_LABELS[statKey] || statKey;
   const changedRank = p.projected_rank !== p.rank;
   const aliveTag = p.still_alive
     ? `<span class="alive-tag alive">still alive</span>` : `<span class="alive-tag out">eliminated</span>`;
-  return `<div class="podium-card rank-${p.projected_rank}">
+  return `<div class="podium-card rank-${p.projected_rank}" style="--i:${i}">
     <div class="rank-badge">#${p.projected_rank}${changedRank ? ` <span class="rank-was">(now #${p.rank})</span>` : ""}</div>
-    <div class="avatar" style="background:${avatarColor(p.player)}">${initials(p.player)}</div>
+    <div class="avatar-wrap">
+      <div class="avatar" style="background:${avatarColor(p.player)}">${initials(p.player)}</div>
+      <div class="avatar-flag">${flag(p.team)}</div>
+    </div>
     <div class="podium-name">${p.player}</div>
-    <div class="podium-team">${flag(p.team)} ${p.team}</div>
+    <div class="podium-team">${p.team}</div>
     <div class="podium-stat">${p[projKey].toFixed(1)} <span>projected ${statLabel}</span></div>
     <div class="podium-current">currently ${p[statKey]}</div>
     ${aliveTag}
@@ -274,6 +323,9 @@ function awardRow(p, statKey, otherKey) {
   </tr>`;
 }
 
+// Podium arrays arrive ranked 1st-2nd-3rd; re-ordered to 2nd-1st-3rd below so
+// the CSS's taller/raised rank-1 card lands in the visual middle, like a
+// medal ceremony podium.
 function renderAwards() {
   const a = DATA.awards;
   if (!a) return;
@@ -282,19 +334,19 @@ function renderAwards() {
 
   const gb = a.golden_boot_projected;
   document.getElementById("golden-boot-podium").innerHTML =
-    [gb[1], gb[0], gb[2]].map(p => podiumCard(p, "goals")).join(""); // 2nd-1st-3rd for a podium look
+    [gb[1], gb[0], gb[2]].map((p, i) => podiumCard(p, "goals", i)).join("");
   document.getElementById("golden-boot-tbody").innerHTML =
     gb.map(p => awardRow(p, "goals", "assists")).join("");
 
   const ta = a.top_assists_projected;
   document.getElementById("top-assists-podium").innerHTML =
-    [ta[1], ta[0], ta[2]].map(p => podiumCard(p, "assists")).join("");
+    [ta[1], ta[0], ta[2]].map((p, i) => podiumCard(p, "assists", i)).join("");
   document.getElementById("top-assists-tbody").innerHTML =
     ta.map(p => awardRow(p, "assists", "goals")).join("");
 
   const gg = a.golden_glove_projected;
   document.getElementById("golden-glove-podium").innerHTML =
-    [gg[1], gg[0], gg[2]].map(p => podiumCard(p, "clean_sheets")).join("");
+    [gg[1], gg[0], gg[2]].map((p, i) => podiumCard(p, "clean_sheets", i)).join("");
   document.getElementById("golden-glove-tbody").innerHTML =
     gg.map(p => awardRow(p, "clean_sheets", "goals_conceded")).join("");
 }

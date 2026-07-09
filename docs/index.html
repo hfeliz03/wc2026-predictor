@@ -4,16 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WC2026 Knockout Predictor</title>
-<link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icons/7.5.0/css/flag-icons.min.css">
+<link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
 
 <header class="hero">
+  <span class="hero-ball" aria-hidden="true">&#9917;</span>
   <div class="hero-inner">
+    <div class="hero-kicker"><span class="live-dot"></span>FIFA World Cup 2026 &middot; Knockout Stage</div>
     <h1>WC2026 Knockout Predictor</h1>
     <p class="hero-sub" id="hero-sub">Loading predictions&hellip;</p>
 
     <div class="model-toggle" role="radiogroup" aria-label="Model selector">
+      <div class="toggle-indicator" id="toggle-indicator" aria-hidden="true"></div>
       <button class="toggle-btn active" data-model="aware" id="btn-aware">Aware</button>
       <button class="toggle-btn" data-model="blind" id="btn-blind">Blind</button>
     </div>
@@ -36,13 +40,13 @@
     <div class="matchup-grid" id="matchup-grid"></div>
   </section>
 
-  <!-- <section class="panel" id="scorecard-section">
+  <section class="panel" id="scorecard-section">
     <h2>Model scorecard</h2>
     <div class="scorecard" id="scorecard"></div>
-  </section> -->
+  </section>
 
   <section class="panel" id="montecarlo-section">
-    <h2>10,000 simulated brackets</h2>
+    <h2>Monte Carlo &mdash; 10,000 simulated brackets</h2>
     <p class="panel-sub">Chance to reach the semifinal, the final, and to win the cup, under each model.</p>
     <div class="table-wrap">
       <table id="mc-table">
@@ -66,10 +70,11 @@
   </section>
 
   <section class="panel" id="awards-section">
-    <h2>Individual Awards</h2>
+    <h2>Awards</h2>
     <p class="panel-sub" id="awards-sub"></p>
 
     <h3 class="award-heading">Golden Boot &mdash; projected winner</h3>
+    <p class="panel-sub">Podium ranks by projected final tally; the table shows current standings alongside the projection.</p>
     <div class="podium" id="golden-boot-podium"></div>
     <div class="table-wrap">
       <table class="award-table">
@@ -88,6 +93,7 @@
     </div>
 
     <h3 class="award-heading">Golden Glove &mdash; projected winner</h3>
+    <p class="panel-sub">Clean sheets through the Round of 16, projected forward the same way.</p>
     <div class="podium" id="golden-glove-podium"></div>
     <div class="table-wrap">
       <table class="award-table">
@@ -103,6 +109,6 @@
   <p id="footer-note"></p>
 </footer>
 
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
