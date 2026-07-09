@@ -796,6 +796,8 @@ footer {
 }
 footer .photo-credit { font-size: 11px; margin-top: 6px; opacity: 0.7; }
 footer .photo-credit a { color: var(--text-dim); text-decoration: underline; }
+footer .footer-signature { font-size: 11px; margin-top: 6px; opacity: 0.7; }
+footer .footer-signature a { color: var(--text-dim); text-decoration: underline; }
 
 @media (max-width: 720px) {
   .bracket { grid-template-columns: 1fr; }

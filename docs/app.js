@@ -107,7 +107,7 @@ function render() {
 }
 
 function renderHero() {
-  document.getElementById("hero-sub").textContent = `Generated ${DATA.generated_at}`;
+  document.getElementById("hero-sub").textContent = `Last updated ${DATA.generated_at}`;
   document.getElementById("toggle-help").textContent = MODEL === "aware"
     ? "Aware: pre-tournament + group-stage signal, plus each team's already-completed knockout form (R32 + R16). Using real, already-known results to inform later rounds - not leakage."
     : "Blind: pre-tournament + group-stage signal only. Never touches any knockout-round outcome. This is the version graded at 75% accuracy on all 24 R32+R16 games.";
@@ -413,7 +413,9 @@ function renderAwards() {
 
 function renderFooter() {
   document.getElementById("footer-note").textContent =
-    `WC2026 Knockout Predictor · generated ${DATA.generated_at} · predictions update as each round is played.`;
+    `WC2026 Knockout Predictor · last updated ${DATA.generated_at} · predictions update as each round is played.`;
+  document.getElementById("footer-signature").innerHTML =
+    `with &lt;3 <a href="https://github.com/heofeliz03" target="_blank" rel="noopener">heofeliz03</a>`;
 }
 
 main();
