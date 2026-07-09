@@ -212,6 +212,39 @@ main { max-width: 1100px; margin: 0 auto; padding: 8px 24px 60px; }
 }
 .rationale b { color: var(--text); }
 
+.matchup-card.played { border-color: var(--gold); }
+
+.result-badge {
+  background: rgba(244, 197, 66, 0.08);
+  border: 1px solid rgba(244, 197, 66, 0.3);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ft-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 1px 4px;
+}
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: auto;
+}
+.badge.ok { background: rgba(52, 211, 153, 0.15); color: var(--win); }
+.badge.miss { background: rgba(248, 113, 113, 0.15); color: var(--loss); }
+.badge-blind.ok, .badge-blind.miss { margin-left: 8px; }
+
 /* ---------- Scorecard ---------- */
 
 .scorecard {
@@ -270,6 +303,85 @@ tbody td {
 }
 tbody td:first-child { text-align: left; font-weight: 600; }
 tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+/* ---------- Awards ---------- */
+
+.award-heading {
+  font-size: 16px;
+  margin: 28px 0 14px;
+  color: var(--text);
+}
+.award-heading:first-of-type { margin-top: 0; }
+
+.podium {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 20px;
+}
+
+.podium-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 12px;
+  text-align: center;
+  position: relative;
+}
+.podium-card.rank-1 { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(244,197,66,0.3); padding-top: 26px; transform: translateY(-8px); }
+.podium-card.rank-2 { border-color: var(--blind); }
+.podium-card.rank-3 { border-color: var(--aware); }
+
+.rank-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 22px;
+  color: #0a0e17;
+}
+.avatar-sm { width: 30px; height: 30px; font-size: 12px; margin: 0; }
+
+.podium-name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+.podium-team { color: var(--text-dim); font-size: 12px; margin-bottom: 10px; }
+.podium-stat { font-size: 22px; font-weight: 700; color: var(--gold); }
+.podium-stat span { display: block; font-size: 11px; font-weight: 500; color: var(--text-dim); text-transform: uppercase; }
+
+.alive-tag {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.alive-tag.alive { background: rgba(52, 211, 153, 0.15); color: var(--win); }
+.alive-tag.out { background: rgba(139, 147, 171, 0.15); color: var(--text-dim); }
+
+.award-table { margin-bottom: 8px; }
+.award-table td:first-child, .award-table th:first-child { width: 40px; }
+.award-table td:nth-child(2), .award-table th:nth-child(2) { text-align: left; }
+.award-table td:nth-child(3), .award-table th:nth-child(3) { text-align: left; }
+
+@media (max-width: 640px) {
+  .podium { grid-template-columns: 1fr; }
+  .podium-card.rank-1 { transform: none; order: -1; }
+}
 
 footer {
   text-align: center;

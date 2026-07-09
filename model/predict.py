@@ -45,6 +45,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import awards
+import evaluate
 import features
 import train
 from config import HOST_NATIONS, LOGISTIC_K, MONTE_CARLO_RUNS, PREDICTIONS_JSON_PATH, RANDOM_SEED
@@ -105,19 +107,65 @@ def quarterfinal_fixtures() -> list:
     return QF_FIXTURES
 
 
-def _game_probs(strength_blind: pd.Series, strength_aware: pd.Series, team_a: str, team_b: str, k: float = LOGISTIC_K) -> dict:
-    p_blind = train.backbone_predict_proba(strength_blind, team_a, team_b, k)
-    p_aware = train.backbone_predict_proba(strength_aware, team_a, team_b, k)
-    return {
+_STAGE_TO_ROUND = {v: k for k, v in evaluate.ROUND_STAGE_LABELS.items()}
+
+
+def _game_probs(strength_blind: pd.Series, strength_aware: pd.Series, team_a: str, team_b: str,
+                 k: float = LOGISTIC_K, stage_label: str = None) -> dict:
+    real = evaluate.played_result(stage_label, team_a, team_b) if stage_label else None
+
+    # Once a game is played, show the LOCKED pre-game prediction, never a
+    # fresh recompute - the aware model's knockout-form features would
+    # otherwise bake that game's own result into predicting itself (the
+    # same leakage grade_round() already guards against, here in the
+    # display path instead of the grading path).
+    locked = None
+    if real is not None and stage_label:
+        round_key = _STAGE_TO_ROUND.get(stage_label)
+        locked = evaluate.locked_game(round_key, team_a, team_b) if round_key else None
+
+    if locked is not None:
+        # locked was saved keyed to its own team_a/team_b order, which may
+        # differ from the order requested here (e.g. SF pairing direction).
+        flip = locked["team_a"] != team_a
+        p_blind = locked["pB_blind"] if flip else locked["pA_blind"]
+        p_aware = locked["pB_aware"] if flip else locked["pA_aware"]
+        predicted_blind = locked["predicted_blind"]
+        predicted_aware = locked["predicted_aware"]
+    else:
+        p_blind = train.backbone_predict_proba(strength_blind, team_a, team_b, k)
+        p_aware = train.backbone_predict_proba(strength_aware, team_a, team_b, k)
+        predicted_blind = team_a if p_blind >= 0.5 else team_b
+        predicted_aware = team_a if p_aware >= 0.5 else team_b
+
+    game = {
         "team_a": team_a,
         "team_b": team_b,
         "pA_blind": round(p_blind, 4),
         "pB_blind": round(1 - p_blind, 4),
         "pA_aware": round(p_aware, 4),
         "pB_aware": round(1 - p_aware, 4),
-        "predicted_blind": team_a if p_blind >= 0.5 else team_b,
-        "predicted_aware": team_a if p_aware >= 0.5 else team_b,
+        "predicted_blind": predicted_blind,
+        "predicted_aware": predicted_aware,
+        "played": real is not None,
+        "actual_winner": real["winner"] if real else None,
+        "actual_score": f"{real['score_a']}-{real['score_b']}" if real else None,
+        "correct_blind": (predicted_blind == real["winner"]) if real else None,
+        "correct_aware": (predicted_aware == real["winner"]) if real else None,
+        "used_locked_prediction": locked is not None,
+        # Rationale text is part of the locked snapshot too - reuse it here
+        # so a played game's "why" doesn't get recomputed from post-game
+        # data either. Callers only fill these in fresh when still None.
+        "rationale_blind": locked["rationale_blind"] if locked else None,
+        "rationale_aware": locked["rationale_aware"] if locked else None,
     }
+    return game
+
+
+def _resolved_winner(stage_label: str, team_a: str, team_b: str, fallback: str) -> str:
+    """Real result if this pairing has already been played at this stage, else the model's fallback pick."""
+    real = evaluate.played_result(stage_label, team_a, team_b)
+    return real["winner"] if real else fallback
 
 
 def deterministic_bracket(team_table: pd.DataFrame, strength_blind: pd.Series, strength_aware: pd.Series,
@@ -142,33 +190,45 @@ def deterministic_bracket(team_table: pd.DataFrame, strength_blind: pd.Series, s
         and blind_path["final_matchup"] == aware_path["final_matchup"]
     )
 
-    # Display pairing: aware model's path (informed by more completed
-    # results). If the two models' paths diverge, note it explicitly rather
-    # than paper over it - see bracket_agrees above.
+    # Display pairing: real results once played, otherwise the aware
+    # model's path (informed by more completed results). If the two
+    # models' paths diverge on a still-hypothetical game, note it
+    # explicitly rather than paper over it - see bracket_agrees above.
+    def _fill_rationale(probs, team_a, team_b):
+        # Only compute fresh if not already pulled from a locked snapshot
+        # (see _game_probs) - keeps a played game's "why" consistent with
+        # the probability it's attached to, both pre-game.
+        if probs["rationale_blind"] is None:
+            probs["rationale_blind"] = rationale(team_table, team_a, team_b, weights, train.BACKBONE_FEATURES)
+            probs["rationale_aware"] = rationale(team_table, team_a, team_b, weights, train.FULL_FEATURES)
+        return probs
+
     qf_results = {}
     for game in QF_FIXTURES:
-        probs = _game_probs(strength_blind, strength_aware, game["team_a"], game["team_b"], k)
+        probs = _game_probs(strength_blind, strength_aware, game["team_a"], game["team_b"], k, stage_label="Quarterfinal")
         probs["slot"] = game["slot"]
         probs["date"] = game["date"]
-        probs["rationale_blind"] = rationale(team_table, game["team_a"], game["team_b"], weights, train.BACKBONE_FEATURES)
-        probs["rationale_aware"] = rationale(team_table, game["team_a"], game["team_b"], weights, train.FULL_FEATURES)
+        _fill_rationale(probs, game["team_a"], game["team_b"])
         qf_results[game["slot"]] = probs
 
     sf_results = {}
     sf_slots = ["SF1", "SF2"]
     for sf_slot, (qf_a_slot, qf_b_slot) in zip(sf_slots, SF_PAIRING):
-        team_a = qf_results[qf_a_slot]["predicted_aware"]
-        team_b = qf_results[qf_b_slot]["predicted_aware"]
-        probs = _game_probs(strength_blind, strength_aware, team_a, team_b, k)
+        team_a = _resolved_winner("Quarterfinal", qf_results[qf_a_slot]["team_a"], qf_results[qf_a_slot]["team_b"],
+                                   qf_results[qf_a_slot]["predicted_aware"])
+        team_b = _resolved_winner("Quarterfinal", qf_results[qf_b_slot]["team_a"], qf_results[qf_b_slot]["team_b"],
+                                   qf_results[qf_b_slot]["predicted_aware"])
+        probs = _game_probs(strength_blind, strength_aware, team_a, team_b, k, stage_label="Semifinal")
         probs["slot"] = sf_slot
-        probs["rationale_blind"] = rationale(team_table, team_a, team_b, weights, train.BACKBONE_FEATURES)
-        probs["rationale_aware"] = rationale(team_table, team_a, team_b, weights, train.FULL_FEATURES)
+        _fill_rationale(probs, team_a, team_b)
         sf_results[sf_slot] = probs
 
-    final_team_a, final_team_b = aware_path["final_matchup"]
-    final_probs = _game_probs(strength_blind, strength_aware, final_team_a, final_team_b, k)
-    final_probs["rationale_blind"] = rationale(team_table, final_team_a, final_team_b, weights, train.BACKBONE_FEATURES)
-    final_probs["rationale_aware"] = rationale(team_table, final_team_a, final_team_b, weights, train.FULL_FEATURES)
+    final_team_a = _resolved_winner("Semifinal", sf_results["SF1"]["team_a"], sf_results["SF1"]["team_b"],
+                                     aware_path["final_matchup"][0])
+    final_team_b = _resolved_winner("Semifinal", sf_results["SF2"]["team_a"], sf_results["SF2"]["team_b"],
+                                     aware_path["final_matchup"][1])
+    final_probs = _game_probs(strength_blind, strength_aware, final_team_a, final_team_b, k, stage_label="Final")
+    _fill_rationale(final_probs, final_team_a, final_team_b)
 
     return {
         "quarterfinals": list(qf_results.values()),
@@ -181,21 +241,28 @@ def deterministic_bracket(team_table: pd.DataFrame, strength_blind: pd.Series, s
 
 
 def _advance_bracket(strength: pd.Series, k: float = LOGISTIC_K) -> dict:
-    """Advance QF -> SF -> Final using ONE model's own predictions at every round."""
+    """
+    Advance QF -> SF -> Final using ONE model's own predictions, but a real
+    result (once played) always overrides the model - this is a live
+    bracket, not a pure hypothetical, once games start happening.
+    """
     qf_winners = {}
     for game in QF_FIXTURES:
         p = train.backbone_predict_proba(strength, game["team_a"], game["team_b"], k)
-        qf_winners[game["slot"]] = game["team_a"] if p >= 0.5 else game["team_b"]
+        fallback = game["team_a"] if p >= 0.5 else game["team_b"]
+        qf_winners[game["slot"]] = _resolved_winner("Quarterfinal", game["team_a"], game["team_b"], fallback)
 
     sf_winners = []
     for qf_a_slot, qf_b_slot in SF_PAIRING:
         team_a, team_b = qf_winners[qf_a_slot], qf_winners[qf_b_slot]
         p = train.backbone_predict_proba(strength, team_a, team_b, k)
-        sf_winners.append(team_a if p >= 0.5 else team_b)
+        fallback = team_a if p >= 0.5 else team_b
+        sf_winners.append(_resolved_winner("Semifinal", team_a, team_b, fallback))
 
     final_matchup = (sf_winners[0], sf_winners[1])
     p_final = train.backbone_predict_proba(strength, final_matchup[0], final_matchup[1], k)
-    champion = final_matchup[0] if p_final >= 0.5 else final_matchup[1]
+    fallback_champion = final_matchup[0] if p_final >= 0.5 else final_matchup[1]
+    champion = _resolved_winner("Final", final_matchup[0], final_matchup[1], fallback_champion)
 
     return {"qf_winners": qf_winners, "sf_winners": sf_winners, "final_matchup": final_matchup, "champion": champion}
 
@@ -212,24 +279,44 @@ def monte_carlo_bracket(strength: pd.Series, k: float = LOGISTIC_K, n_runs: int 
     reach_final = {t: 0 for t in all_qf_teams}
     champion = {t: 0 for t in all_qf_teams}
 
+    # Real results (once played) collapse to a certainty instead of being
+    # sampled - this makes Monte Carlo a live "what's left to be decided"
+    # simulation rather than a purely hypothetical one once the tournament
+    # is underway. Loaded once (not per-iteration - matters at 10k runs).
+    qf_played = evaluate.all_played_results("Quarterfinal")
+    sf_played = evaluate.all_played_results("Semifinal")
+    final_played = evaluate.all_played_results("Final")
+
     for _ in range(n_runs):
         qf_winners = {}
         for game in QF_FIXTURES:
-            p = train.backbone_predict_proba(strength, game["team_a"], game["team_b"], k)
-            winner = game["team_a"] if rng.random() < p else game["team_b"]
+            real = qf_played.get(frozenset({game["team_a"], game["team_b"]}))
+            if real:
+                winner = real["winner"]
+            else:
+                p = train.backbone_predict_proba(strength, game["team_a"], game["team_b"], k)
+                winner = game["team_a"] if rng.random() < p else game["team_b"]
             qf_winners[game["slot"]] = winner
             reach_sf[winner] += 1
 
         sf_winners = []
         for qf_a_slot, qf_b_slot in SF_PAIRING:
             team_a, team_b = qf_winners[qf_a_slot], qf_winners[qf_b_slot]
-            p = train.backbone_predict_proba(strength, team_a, team_b, k)
-            winner = team_a if rng.random() < p else team_b
+            real = sf_played.get(frozenset({team_a, team_b}))
+            if real:
+                winner = real["winner"]
+            else:
+                p = train.backbone_predict_proba(strength, team_a, team_b, k)
+                winner = team_a if rng.random() < p else team_b
             sf_winners.append(winner)
             reach_final[winner] += 1
 
-        p_final = train.backbone_predict_proba(strength, sf_winners[0], sf_winners[1], k)
-        champ = sf_winners[0] if rng.random() < p_final else sf_winners[1]
+        real_final = final_played.get(frozenset({sf_winners[0], sf_winners[1]}))
+        if real_final:
+            champ = real_final["winner"]
+        else:
+            p_final = train.backbone_predict_proba(strength, sf_winners[0], sf_winners[1], k)
+            champ = sf_winners[0] if rng.random() < p_final else sf_winners[1]
         champion[champ] += 1
 
     return {
@@ -268,7 +355,9 @@ def build_predictions() -> dict:
     mc_blind = monte_carlo_bracket(strength_blind)
     mc_aware = monte_carlo_bracket(strength_aware)
 
-    return {
+    live = evaluate.cumulative_validation()
+
+    payload = {
         "generated_at": pd.Timestamp.now().strftime("%Y-%m-%d"),
         "method_note": (
             "Every game is scored by two models: 'blind' uses only "
@@ -279,7 +368,10 @@ def build_predictions() -> dict:
             "not leakage - see model/train.py). An apples-to-apples test on "
             "the 8 R16 games found 'aware' didn't change any pick and was "
             "not distinguishably better with n=8, so both are shown rather "
-            "than picking one as definitive."
+            "than picking one as definitive. QF/SF/Final predictions are "
+            "locked in before each round kicks off (model/predictions_history/) "
+            "and graded against real results as they come in - see "
+            "model/evaluate.py."
         ),
         "teams": teams_payload,
         "quarterfinals": bracket["quarterfinals"],
@@ -291,10 +383,27 @@ def build_predictions() -> dict:
         "monte_carlo": {"blind": mc_blind, "aware": mc_aware, "runs": MONTE_CARLO_RUNS},
         "validation": {
             "note": "Backbone (blind) graded on all 24 completed R32+R16 games; zero knockout-outcome fitting.",
-            **weights_payload["form_blind_test_metrics"],
+            **live["r32_r16"],
             "r16_form_comparison": weights_payload.get("r16_form_comparison", {}),
+            "live_rounds": live["live_rounds"],
         },
+        "awards": awards.build_awards(),
     }
+
+    # Lock in this round's predictions the FIRST time they're generated -
+    # but only once that round's fixture is actually determined by real
+    # results (QF fixtures are fixed from the start; SF/Final fixtures
+    # depend on real QF/SF winners). Locking a SF/Final prediction while
+    # its own fixture is still a guess would freeze the wrong matchup.
+    evaluate.lock_round("quarterfinals", payload)
+    if all(evaluate.played_result("Quarterfinal", g["team_a"], g["team_b"]) for g in QF_FIXTURES):
+        evaluate.lock_round("semifinals", payload)
+        sf1, sf2 = payload["semifinals"]
+        if evaluate.played_result("Semifinal", sf1["team_a"], sf1["team_b"]) and \
+           evaluate.played_result("Semifinal", sf2["team_a"], sf2["team_b"]):
+            evaluate.lock_round("final", payload)
+
+    return payload
 
 
 def write_predictions_json(payload: dict, path: Path = None) -> Path:

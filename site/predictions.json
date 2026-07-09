@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-07-08",
-  "method_note": "Every game is scored by two models: 'blind' uses only pre-tournament + group-stage signal (graded 0.750 accuracy on all 24 completed R32+R16 games, zero knockout-outcome fitting); 'aware' adds each team's knockout form from the already-played R32+R16 (a legitimate forward-looking use of completed results, not leakage - see model/train.py). An apples-to-apples test on the 8 R16 games found 'aware' didn't change any pick and was not distinguishably better with n=8, so both are shown rather than picking one as definitive.",
+  "method_note": "Every game is scored by two models: 'blind' uses only pre-tournament + group-stage signal (graded 0.750 accuracy on all 24 completed R32+R16 games, zero knockout-outcome fitting); 'aware' adds each team's knockout form from the already-played R32+R16 (a legitimate forward-looking use of completed results, not leakage - see model/train.py). An apples-to-apples test on the 8 R16 games found 'aware' didn't change any pick and was not distinguishably better with n=8, so both are shown rather than picking one as definitive. QF/SF/Final predictions are locked in before each round kicks off (model/predictions_history/) and graded against real results as they come in - see model/evaluate.py.",
   "teams": [
     {
       "name": "Argentina",
@@ -85,10 +85,16 @@
       "pB_aware": 0.3355,
       "predicted_blind": "France",
       "predicted_aware": "France",
-      "slot": "QF1",
-      "date": "2026-07-09",
+      "played": false,
+      "actual_winner": null,
+      "actual_score": null,
+      "correct_blind": null,
+      "correct_aware": null,
+      "used_locked_prediction": false,
       "rationale_blind": "France favored on World Cup titles; France favored on FIFA ranking points",
-      "rationale_aware": "France favored on World Cup titles; France favored on FIFA ranking points"
+      "rationale_aware": "France favored on World Cup titles; France favored on FIFA ranking points",
+      "slot": "QF1",
+      "date": "2026-07-09"
     },
     {
       "team_a": "Spain",
@@ -99,10 +105,16 @@
       "pB_aware": 0.3071,
       "predicted_blind": "Spain",
       "predicted_aware": "Spain",
-      "slot": "QF2",
-      "date": "2026-07-10",
+      "played": false,
+      "actual_winner": null,
+      "actual_score": null,
+      "correct_blind": null,
+      "correct_aware": null,
+      "used_locked_prediction": false,
       "rationale_blind": "Spain favored on FIFA ranking points; Spain favored on storyline",
-      "rationale_aware": "Spain favored on FIFA ranking points; Spain favored on storyline"
+      "rationale_aware": "Spain favored on FIFA ranking points; Spain favored on storyline",
+      "slot": "QF2",
+      "date": "2026-07-10"
     },
     {
       "team_a": "Norway",
@@ -113,10 +125,16 @@
       "pB_aware": 0.5883,
       "predicted_blind": "England",
       "predicted_aware": "England",
-      "slot": "QF3",
-      "date": "2026-07-10",
+      "played": false,
+      "actual_winner": null,
+      "actual_score": null,
+      "correct_blind": null,
+      "correct_aware": null,
+      "used_locked_prediction": false,
       "rationale_blind": "England favored on FIFA ranking points; Norway favored on storyline",
-      "rationale_aware": "England favored on FIFA ranking points; Norway favored on storyline"
+      "rationale_aware": "England favored on FIFA ranking points; Norway favored on storyline",
+      "slot": "QF3",
+      "date": "2026-07-10"
     },
     {
       "team_a": "Argentina",
@@ -127,10 +145,16 @@
       "pB_aware": 0.2964,
       "predicted_blind": "Argentina",
       "predicted_aware": "Argentina",
-      "slot": "QF4",
-      "date": "2026-07-11",
+      "played": false,
+      "actual_winner": null,
+      "actual_score": null,
+      "correct_blind": null,
+      "correct_aware": null,
+      "used_locked_prediction": false,
       "rationale_blind": "Argentina favored on FIFA ranking points; Argentina favored on World Cup titles",
-      "rationale_aware": "Argentina favored on FIFA ranking points; Argentina favored on World Cup titles"
+      "rationale_aware": "Argentina favored on FIFA ranking points; Argentina favored on World Cup titles",
+      "slot": "QF4",
+      "date": "2026-07-11"
     }
   ],
   "semifinals": [
@@ -143,9 +167,15 @@
       "pB_aware": 0.4487,
       "predicted_blind": "France",
       "predicted_aware": "France",
-      "slot": "SF1",
+      "played": false,
+      "actual_winner": null,
+      "actual_score": null,
+      "correct_blind": null,
+      "correct_aware": null,
+      "used_locked_prediction": false,
       "rationale_blind": "France favored on group-stage points; France favored on World Cup titles",
-      "rationale_aware": "France favored on group-stage points; France favored on World Cup titles"
+      "rationale_aware": "France favored on group-stage points; France favored on World Cup titles",
+      "slot": "SF1"
     },
     {
       "team_a": "England",
@@ -156,9 +186,15 @@
       "pB_aware": 0.617,
       "predicted_blind": "Argentina",
       "predicted_aware": "Argentina",
-      "slot": "SF2",
+      "played": false,
+      "actual_winner": null,
+      "actual_score": null,
+      "correct_blind": null,
+      "correct_aware": null,
+      "used_locked_prediction": false,
       "rationale_blind": "Argentina favored on World Cup titles; Argentina favored on group-stage points",
-      "rationale_aware": "Argentina favored on World Cup titles; Argentina favored on group-stage points"
+      "rationale_aware": "Argentina favored on World Cup titles; Argentina favored on group-stage points",
+      "slot": "SF2"
     }
   ],
   "final": {
@@ -170,6 +206,12 @@
     "pB_aware": 0.4719,
     "predicted_blind": "Argentina",
     "predicted_aware": "France",
+    "played": false,
+    "actual_winner": null,
+    "actual_score": null,
+    "correct_blind": null,
+    "correct_aware": null,
+    "used_locked_prediction": false,
     "rationale_blind": "Argentina favored on World Cup titles; Argentina favored on continental titles",
     "rationale_aware": "France favored on extra-time/penalty escapes (fragility); France favored on knockout-round goal difference"
   },
@@ -276,6 +318,194 @@
       "form_blind_n_correct": 4,
       "form_aware_accuracy": 0.5,
       "form_aware_n_correct": 4
-    }
+    },
+    "live_rounds": {}
+  },
+  "awards": {
+    "note": "Standings through the Round of 16 (not a prediction - these are already-known facts). 'Still alive' means that player's team reached the quarterfinals, so their tally can still grow.",
+    "golden_boot": [
+      {
+        "rank": 1,
+        "player": "Lionel Messi",
+        "team": "Argentina",
+        "goals": 8,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 2,
+        "player": "Kylian Mbappe",
+        "team": "France",
+        "goals": 7,
+        "assists": 2,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 3,
+        "player": "Erling Haaland",
+        "team": "Norway",
+        "goals": 7,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 4,
+        "player": "Harry Kane",
+        "team": "England",
+        "goals": 6,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 5,
+        "player": "Mikel Oyarzabal",
+        "team": "Spain",
+        "goals": 4,
+        "assists": 3,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 6,
+        "player": "Ousmane Dembele",
+        "team": "France",
+        "goals": 4,
+        "assists": 2,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 7,
+        "player": "Vinicius Junior",
+        "team": "Brazil",
+        "goals": 4,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": false
+      },
+      {
+        "rank": 8,
+        "player": "Jude Bellingham",
+        "team": "England",
+        "goals": 4,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 9,
+        "player": "Ismaila Sarr",
+        "team": "Senegal",
+        "goals": 4,
+        "assists": 0,
+        "matches_played": 4,
+        "still_alive": false
+      },
+      {
+        "rank": 10,
+        "player": "Julian Quinones",
+        "team": "Mexico",
+        "goals": 4,
+        "assists": 0,
+        "matches_played": 5,
+        "still_alive": false
+      }
+    ],
+    "top_assists": [
+      {
+        "rank": 1,
+        "player": "Michael Olise",
+        "team": "France",
+        "assists": 5,
+        "goals": 0,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 2,
+        "player": "Bruno Guimaraes",
+        "team": "Brazil",
+        "assists": 4,
+        "goals": 0,
+        "matches_played": 5,
+        "still_alive": false
+      },
+      {
+        "rank": 3,
+        "player": "Brahim Diaz",
+        "team": "Morocco",
+        "assists": 4,
+        "goals": 0,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 4,
+        "player": "Roberto Alvarado",
+        "team": "Mexico",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": false
+      },
+      {
+        "rank": 5,
+        "player": "Alexander Isak",
+        "team": "Sweden",
+        "assists": 3,
+        "goals": 1,
+        "matches_played": 4,
+        "still_alive": false
+      },
+      {
+        "rank": 6,
+        "player": "Martin Odegaard",
+        "team": "Norway",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 7,
+        "player": "Bukayo Saka",
+        "team": "England",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 8,
+        "player": "Andreas Schjelderup",
+        "team": "Norway",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": true
+      },
+      {
+        "rank": 9,
+        "player": "Florian Wirtz",
+        "team": "Germany",
+        "assists": 3,
+        "goals": 0,
+        "matches_played": 4,
+        "still_alive": false
+      },
+      {
+        "rank": 10,
+        "player": "Kylian Mbappe",
+        "team": "France",
+        "assists": 2,
+        "goals": 7,
+        "matches_played": 5,
+        "still_alive": true
+      }
+    ]
   }
 }

@@ -57,6 +57,7 @@ function render() {
   renderMatchups();
   renderScorecard();
   renderMonteCarlo();
+  renderAwards();
   renderFooter();
 }
 
@@ -143,13 +144,27 @@ function renderBracket() {
   }
 }
 
+function resultBadge(g) {
+  if (!g.played) return "";
+  const blindTag = g.correct_blind
+    ? `<span class="badge badge-blind ok">blind ✓</span>` : `<span class="badge badge-blind miss">blind ✗</span>`;
+  const awareTag = g.correct_aware
+    ? `<span class="badge badge-aware ok">aware ✓</span>` : `<span class="badge badge-aware miss">aware ✗</span>`;
+  return `<div class="result-badge">
+    <span class="ft-tag">FT</span> ${flag(g.actual_winner)} <b>${g.actual_winner}</b> won ${g.actual_score}
+    ${blindTag}${awareTag}
+  </div>`;
+}
+
 function matchupCard(g, stageLabel) {
-  return `<div class="matchup-card">
+  return `<div class="matchup-card${g.played ? " played" : ""}">
     <span class="stage-tag">${stageLabel}${g.date ? " · " + g.date : ""}</span>
     <div class="matchup-teams">
       <span>${flag(g.team_a)} ${g.team_a}</span>
       <span>${flag(g.team_b)} ${g.team_b}</span>
     </div>
+
+    ${resultBadge(g)}
 
     <div class="prob-row">
       <div class="prob-label"><span>Blind</span><span>${Math.round(g.pA_blind*100)}% / ${Math.round(g.pB_blind*100)}%</span></div>
@@ -177,10 +192,18 @@ function renderMatchups() {
 function renderScorecard() {
   const v = DATA.validation;
   const r16 = v.r16_form_comparison || {};
+
+  const liveCards = Object.entries(v.live_rounds || {}).map(([roundKey, g]) => `
+    <div class="stat-card">
+      <div class="stat-value">${g.aware.n_correct}/${g.n}</div>
+      <div class="stat-label">${g.stage} so far, aware model (blind: ${g.blind.n_correct}/${g.n})${g.n < g.n_total_in_round ? ` — ${g.n}/${g.n_total_in_round} played` : ""}</div>
+    </div>`).join("");
+
   document.getElementById("scorecard").innerHTML = `
     <div class="stat-card"><div class="stat-value">${Math.round(v.accuracy*100)}%</div><div class="stat-label">Accuracy on all ${v.n} completed R32+R16 games (blind model)</div></div>
     <div class="stat-card"><div class="stat-value">${v.n_correct}/${v.n}</div><div class="stat-label">Games called correctly</div></div>
     <div class="stat-card"><div class="stat-value">${r16.form_aware_n_correct ?? "?"}/${r16.n ?? 8}</div><div class="stat-label">R16-only, aware model (blind: ${r16.form_blind_n_correct ?? "?"}/${r16.n ?? 8}) - the round with the most upsets</div></div>
+    ${liveCards}
     <div class="scorecard-note">${DATA.method_note}</div>
   `;
 }
@@ -198,6 +221,62 @@ function renderMonteCarlo() {
     </tr>`;
   }).join("");
   document.getElementById("mc-tbody").innerHTML = rows;
+}
+
+// No real player photos are available in this build (see README) - each
+// player instead gets a deterministic-colored initials avatar so the same
+// player always renders the same way across reloads.
+const AVATAR_COLORS = ["#38bdf8", "#fb923c", "#34d399", "#f472b6", "#a78bfa", "#f4c542", "#fb7185", "#4ade80"];
+function avatarColor(name) {
+  let hash = 0;
+  for (const ch of name) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
+  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
+}
+function initials(name) {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] || "") + (parts[parts.length - 1]?.[0] || "")).toUpperCase();
+}
+
+function podiumCard(p, statKey, statLabel) {
+  const aliveTag = p.still_alive
+    ? `<span class="alive-tag alive">still alive</span>` : `<span class="alive-tag out">eliminated</span>`;
+  return `<div class="podium-card rank-${p.rank}">
+    <div class="rank-badge">#${p.rank}</div>
+    <div class="avatar" style="background:${avatarColor(p.player)}">${initials(p.player)}</div>
+    <div class="podium-name">${p.player}</div>
+    <div class="podium-team">${flag(p.team)} ${p.team}</div>
+    <div class="podium-stat">${p[statKey]} <span>${statLabel}</span></div>
+    ${aliveTag}
+  </div>`;
+}
+
+function awardRow(p, statKey) {
+  return `<tr>
+    <td><div class="avatar avatar-sm" style="background:${avatarColor(p.player)}">${initials(p.player)}</div></td>
+    <td>${p.player}</td>
+    <td>${flag(p.team)} ${p.team}</td>
+    <td>${p[statKey[0]]}</td>
+    <td>${p[statKey[1]]}</td>
+  </tr>`;
+}
+
+function renderAwards() {
+  const a = DATA.awards;
+  if (!a) return;
+
+  document.getElementById("awards-sub").textContent = a.note;
+
+  const gb = a.golden_boot;
+  document.getElementById("golden-boot-podium").innerHTML =
+    [gb[1], gb[0], gb[2]].map(p => podiumCard(p, "goals", "goals")).join(""); // 2nd-1st-3rd for a podium look
+  document.getElementById("golden-boot-tbody").innerHTML =
+    gb.map(p => awardRow(p, ["goals", "assists"])).join("");
+
+  const ta = a.top_assists;
+  document.getElementById("top-assists-podium").innerHTML =
+    [ta[1], ta[0], ta[2]].map(p => podiumCard(p, "assists", "assists")).join("");
+  document.getElementById("top-assists-tbody").innerHTML =
+    ta.map(p => awardRow(p, ["assists", "goals"])).join("");
 }
 
 function renderFooter() {
