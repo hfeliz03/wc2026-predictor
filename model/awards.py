@@ -1,11 +1,14 @@
 """
-Stretch goal (PROJECT_PLAN.md #7/#9): Golden Boot + top-assists leaderboard,
-plus a lightweight projection of the eventual winner.
+Stretch goal (PROJECT_PLAN.md #7/#9): Golden Boot, top-assists, and Golden
+Glove (clean sheets) leaderboards, plus a lightweight projection of each
+eventual winner.
 
 Current standings (through the Round of 16) are already-known facts, read
-from data/manual/golden_boot.csv and data/manual/top_assists.csv (compiled
-via WebSearch), joined against teams.csv to flag whether each player's team
-is still alive (their tally can still grow) or eliminated (frozen).
+from data/manual/golden_boot.csv, top_assists.csv, and golden_glove.csv
+(compiled via WebSearch, cross-checked against our own matches.csv
+scorelines where possible - see each CSV's provenance), joined against
+teams.csv to flag whether each player's team is still alive (their tally
+can still grow) or eliminated (frozen).
 
 *Projection, added on request - kept deliberately simple to avoid scope
 creep*: rather than building a second predictive model (e.g. a per-opponent
@@ -81,9 +84,11 @@ def _rerank_by_projection(rows: list, stat_col: str) -> list:
 def build_awards(mc_aware: dict) -> dict:
     golden_boot = pd.read_csv(MANUAL_DIR / "golden_boot.csv")
     top_assists = pd.read_csv(MANUAL_DIR / "top_assists.csv")
+    golden_glove = pd.read_csv(MANUAL_DIR / "golden_glove.csv")
 
     gb_rows = _with_projection(golden_boot, "goals", mc_aware)
     ta_rows = _with_projection(top_assists, "assists", mc_aware)
+    gg_rows = _with_projection(golden_glove, "clean_sheets", mc_aware)
 
     return {
         "note": (
@@ -99,6 +104,8 @@ def build_awards(mc_aware: dict) -> dict:
         "golden_boot_projected": _rerank_by_projection(gb_rows, "goals"),
         "top_assists": ta_rows,
         "top_assists_projected": _rerank_by_projection(ta_rows, "assists"),
+        "golden_glove": gg_rows,
+        "golden_glove_projected": _rerank_by_projection(gg_rows, "clean_sheets"),
     }
 
 
@@ -131,3 +138,8 @@ if __name__ == "__main__":
     for p in a["top_assists_projected"]:
         print(f"  {p['projected_rank']:>2}. {p['player']:22s} projected {p['projected_assists']:.1f} "
               f"(currently {p['assists']}, rank {p['rank']})")
+
+    print("\n=== Golden Glove (re-ranked by projection) ===")
+    for p in a["golden_glove_projected"]:
+        print(f"  {p['projected_rank']:>2}. {p['player']:22s} projected {p['projected_clean_sheets']:.1f} "
+              f"(currently {p['clean_sheets']}, rank {p['rank']})")

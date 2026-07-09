@@ -243,8 +243,11 @@ function initials(name) {
   return ((parts[0]?.[0] || "") + (parts[parts.length - 1]?.[0] || "")).toUpperCase();
 }
 
+const STAT_LABELS = { goals: "goals", assists: "assists", clean_sheets: "clean sheets" };
+
 function podiumCard(p, statKey) {
   const projKey = "projected_" + statKey;
+  const statLabel = STAT_LABELS[statKey] || statKey;
   const changedRank = p.projected_rank !== p.rank;
   const aliveTag = p.still_alive
     ? `<span class="alive-tag alive">still alive</span>` : `<span class="alive-tag out">eliminated</span>`;
@@ -253,7 +256,7 @@ function podiumCard(p, statKey) {
     <div class="avatar" style="background:${avatarColor(p.player)}">${initials(p.player)}</div>
     <div class="podium-name">${p.player}</div>
     <div class="podium-team">${flag(p.team)} ${p.team}</div>
-    <div class="podium-stat">${p[projKey].toFixed(1)} <span>projected ${statKey}</span></div>
+    <div class="podium-stat">${p[projKey].toFixed(1)} <span>projected ${statLabel}</span></div>
     <div class="podium-current">currently ${p[statKey]}</div>
     ${aliveTag}
   </div>`;
@@ -288,6 +291,12 @@ function renderAwards() {
     [ta[1], ta[0], ta[2]].map(p => podiumCard(p, "assists")).join("");
   document.getElementById("top-assists-tbody").innerHTML =
     ta.map(p => awardRow(p, "assists", "goals")).join("");
+
+  const gg = a.golden_glove_projected;
+  document.getElementById("golden-glove-podium").innerHTML =
+    [gg[1], gg[0], gg[2]].map(p => podiumCard(p, "clean_sheets")).join("");
+  document.getElementById("golden-glove-tbody").innerHTML =
+    gg.map(p => awardRow(p, "clean_sheets", "goals_conceded")).join("");
 }
 
 function renderFooter() {
