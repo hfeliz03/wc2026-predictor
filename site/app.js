@@ -308,7 +308,7 @@ function commonsFile(filename, width) {
 const PLAYER_PHOTOS = {
   // Golden Boot
   "Lionel Messi": commonsFile("Lionel Messi 20180626.jpg", 200),
-  "Kylian Mbappe": commonsFile("Kylian Mbappé.jpg", 200),
+  "Kylian Mbappe": commonsFile("Kylian Mbappe France v Senegal 16 June 2026-391 (cropped).jpg", 200),
   "Erling Haaland": commonsFile("Erling Haaland 2023 (cropped).jpg", 200),
   "Harry Kane": commonsFile("Harry Kane.jpg", 200),
   "Ousmane Dembele": commonsFile("Ousmane Dembélé 2018 (cropped).jpg", 200),
