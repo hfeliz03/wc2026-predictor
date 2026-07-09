@@ -322,7 +322,7 @@
     "live_rounds": {}
   },
   "awards": {
-    "note": "Standings through the Round of 16 (not a prediction - these are already-known facts). 'Still alive' means that player's team reached the quarterfinals, so their tally can still grow.",
+    "note": "Standings through the Round of 16 (not a prediction - these are already-known facts). 'Still alive' means that player's team reached the quarterfinals, so their tally can still grow. 'Projected' extrapolates each still-alive player's current per-game rate over their team's expected remaining games (from the aware model's Monte Carlo) - a simple estimate, not a full per-opponent scoring model; see model/awards.py.",
     "golden_boot": [
       {
         "rank": 1,
@@ -331,7 +331,10 @@
         "goals": 8,
         "assists": 1,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 2.16,
+        "projected_goals": 11.5,
+        "projected_rank": 1
       },
       {
         "rank": 2,
@@ -340,7 +343,10 @@
         "goals": 7,
         "assists": 2,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_goals": 9.9,
+        "projected_rank": 2
       },
       {
         "rank": 3,
@@ -349,7 +355,10 @@
         "goals": 7,
         "assists": 1,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 1.57,
+        "projected_goals": 9.2,
+        "projected_rank": 3
       },
       {
         "rank": 4,
@@ -358,7 +367,10 @@
         "goals": 6,
         "assists": 1,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 1.85,
+        "projected_goals": 8.2,
+        "projected_rank": 4
       },
       {
         "rank": 5,
@@ -367,7 +379,10 @@
         "goals": 4,
         "assists": 3,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 2.03,
+        "projected_goals": 5.6,
+        "projected_rank": 6
       },
       {
         "rank": 6,
@@ -376,7 +391,10 @@
         "goals": 4,
         "assists": 2,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_goals": 5.7,
+        "projected_rank": 5
       },
       {
         "rank": 7,
@@ -385,7 +403,10 @@
         "goals": 4,
         "assists": 1,
         "matches_played": 5,
-        "still_alive": false
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_goals": 4.0,
+        "projected_rank": 8
       },
       {
         "rank": 8,
@@ -394,7 +415,10 @@
         "goals": 4,
         "assists": 1,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 1.85,
+        "projected_goals": 5.5,
+        "projected_rank": 7
       },
       {
         "rank": 9,
@@ -403,7 +427,10 @@
         "goals": 4,
         "assists": 0,
         "matches_played": 4,
-        "still_alive": false
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_goals": 4.0,
+        "projected_rank": 9
       },
       {
         "rank": 10,
@@ -412,7 +439,132 @@
         "goals": 4,
         "assists": 0,
         "matches_played": 5,
-        "still_alive": false
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_goals": 4.0,
+        "projected_rank": 10
+      }
+    ],
+    "golden_boot_projected": [
+      {
+        "rank": 1,
+        "player": "Lionel Messi",
+        "team": "Argentina",
+        "goals": 8,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 2.16,
+        "projected_goals": 11.5,
+        "projected_rank": 1
+      },
+      {
+        "rank": 2,
+        "player": "Kylian Mbappe",
+        "team": "France",
+        "goals": 7,
+        "assists": 2,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_goals": 9.9,
+        "projected_rank": 2
+      },
+      {
+        "rank": 3,
+        "player": "Erling Haaland",
+        "team": "Norway",
+        "goals": 7,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 1.57,
+        "projected_goals": 9.2,
+        "projected_rank": 3
+      },
+      {
+        "rank": 4,
+        "player": "Harry Kane",
+        "team": "England",
+        "goals": 6,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 1.85,
+        "projected_goals": 8.2,
+        "projected_rank": 4
+      },
+      {
+        "rank": 6,
+        "player": "Ousmane Dembele",
+        "team": "France",
+        "goals": 4,
+        "assists": 2,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_goals": 5.7,
+        "projected_rank": 5
+      },
+      {
+        "rank": 5,
+        "player": "Mikel Oyarzabal",
+        "team": "Spain",
+        "goals": 4,
+        "assists": 3,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 2.03,
+        "projected_goals": 5.6,
+        "projected_rank": 6
+      },
+      {
+        "rank": 8,
+        "player": "Jude Bellingham",
+        "team": "England",
+        "goals": 4,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 1.85,
+        "projected_goals": 5.5,
+        "projected_rank": 7
+      },
+      {
+        "rank": 7,
+        "player": "Vinicius Junior",
+        "team": "Brazil",
+        "goals": 4,
+        "assists": 1,
+        "matches_played": 5,
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_goals": 4.0,
+        "projected_rank": 8
+      },
+      {
+        "rank": 9,
+        "player": "Ismaila Sarr",
+        "team": "Senegal",
+        "goals": 4,
+        "assists": 0,
+        "matches_played": 4,
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_goals": 4.0,
+        "projected_rank": 9
+      },
+      {
+        "rank": 10,
+        "player": "Julian Quinones",
+        "team": "Mexico",
+        "goals": 4,
+        "assists": 0,
+        "matches_played": 5,
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_goals": 4.0,
+        "projected_rank": 10
       }
     ],
     "top_assists": [
@@ -423,7 +575,10 @@
         "assists": 5,
         "goals": 0,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_assists": 7.1,
+        "projected_rank": 1
       },
       {
         "rank": 2,
@@ -432,7 +587,10 @@
         "assists": 4,
         "goals": 0,
         "matches_played": 5,
-        "still_alive": false
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 4.0,
+        "projected_rank": 4
       },
       {
         "rank": 3,
@@ -441,7 +599,10 @@
         "assists": 4,
         "goals": 0,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 1.48,
+        "projected_assists": 5.2,
+        "projected_rank": 2
       },
       {
         "rank": 4,
@@ -450,7 +611,10 @@
         "assists": 3,
         "goals": 3,
         "matches_played": 5,
-        "still_alive": false
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 3.0,
+        "projected_rank": 7
       },
       {
         "rank": 5,
@@ -459,7 +623,10 @@
         "assists": 3,
         "goals": 1,
         "matches_played": 4,
-        "still_alive": false
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 3.0,
+        "projected_rank": 8
       },
       {
         "rank": 6,
@@ -468,7 +635,10 @@
         "assists": 3,
         "goals": 3,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 1.57,
+        "projected_assists": 3.9,
+        "projected_rank": 5
       },
       {
         "rank": 7,
@@ -477,7 +647,10 @@
         "assists": 3,
         "goals": 3,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 1.85,
+        "projected_assists": 4.1,
+        "projected_rank": 3
       },
       {
         "rank": 8,
@@ -486,7 +659,10 @@
         "assists": 3,
         "goals": 3,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 1.57,
+        "projected_assists": 3.9,
+        "projected_rank": 6
       },
       {
         "rank": 9,
@@ -495,7 +671,10 @@
         "assists": 3,
         "goals": 0,
         "matches_played": 4,
-        "still_alive": false
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 3.0,
+        "projected_rank": 9
       },
       {
         "rank": 10,
@@ -504,7 +683,132 @@
         "assists": 2,
         "goals": 7,
         "matches_played": 5,
-        "still_alive": true
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_assists": 2.8,
+        "projected_rank": 10
+      }
+    ],
+    "top_assists_projected": [
+      {
+        "rank": 1,
+        "player": "Michael Olise",
+        "team": "France",
+        "assists": 5,
+        "goals": 0,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_assists": 7.1,
+        "projected_rank": 1
+      },
+      {
+        "rank": 3,
+        "player": "Brahim Diaz",
+        "team": "Morocco",
+        "assists": 4,
+        "goals": 0,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 1.48,
+        "projected_assists": 5.2,
+        "projected_rank": 2
+      },
+      {
+        "rank": 7,
+        "player": "Bukayo Saka",
+        "team": "England",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 1.85,
+        "projected_assists": 4.1,
+        "projected_rank": 3
+      },
+      {
+        "rank": 2,
+        "player": "Bruno Guimaraes",
+        "team": "Brazil",
+        "assists": 4,
+        "goals": 0,
+        "matches_played": 5,
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 4.0,
+        "projected_rank": 4
+      },
+      {
+        "rank": 6,
+        "player": "Martin Odegaard",
+        "team": "Norway",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 1.57,
+        "projected_assists": 3.9,
+        "projected_rank": 5
+      },
+      {
+        "rank": 8,
+        "player": "Andreas Schjelderup",
+        "team": "Norway",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 1.57,
+        "projected_assists": 3.9,
+        "projected_rank": 6
+      },
+      {
+        "rank": 4,
+        "player": "Roberto Alvarado",
+        "team": "Mexico",
+        "assists": 3,
+        "goals": 3,
+        "matches_played": 5,
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 3.0,
+        "projected_rank": 7
+      },
+      {
+        "rank": 5,
+        "player": "Alexander Isak",
+        "team": "Sweden",
+        "assists": 3,
+        "goals": 1,
+        "matches_played": 4,
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 3.0,
+        "projected_rank": 8
+      },
+      {
+        "rank": 9,
+        "player": "Florian Wirtz",
+        "team": "Germany",
+        "assists": 3,
+        "goals": 0,
+        "matches_played": 4,
+        "still_alive": false,
+        "expected_remaining_games": 0.0,
+        "projected_assists": 3.0,
+        "projected_rank": 9
+      },
+      {
+        "rank": 10,
+        "player": "Kylian Mbappe",
+        "team": "France",
+        "assists": 2,
+        "goals": 7,
+        "matches_played": 5,
+        "still_alive": true,
+        "expected_remaining_games": 2.07,
+        "projected_assists": 2.8,
+        "projected_rank": 10
       }
     ]
   }

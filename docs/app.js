@@ -237,26 +237,31 @@ function initials(name) {
   return ((parts[0]?.[0] || "") + (parts[parts.length - 1]?.[0] || "")).toUpperCase();
 }
 
-function podiumCard(p, statKey, statLabel) {
+function podiumCard(p, statKey) {
+  const projKey = "projected_" + statKey;
+  const changedRank = p.projected_rank !== p.rank;
   const aliveTag = p.still_alive
     ? `<span class="alive-tag alive">still alive</span>` : `<span class="alive-tag out">eliminated</span>`;
-  return `<div class="podium-card rank-${p.rank}">
-    <div class="rank-badge">#${p.rank}</div>
+  return `<div class="podium-card rank-${p.projected_rank}">
+    <div class="rank-badge">#${p.projected_rank}${changedRank ? ` <span class="rank-was">(now #${p.rank})</span>` : ""}</div>
     <div class="avatar" style="background:${avatarColor(p.player)}">${initials(p.player)}</div>
     <div class="podium-name">${p.player}</div>
     <div class="podium-team">${flag(p.team)} ${p.team}</div>
-    <div class="podium-stat">${p[statKey]} <span>${statLabel}</span></div>
+    <div class="podium-stat">${p[projKey].toFixed(1)} <span>projected ${statKey}</span></div>
+    <div class="podium-current">currently ${p[statKey]}</div>
     ${aliveTag}
   </div>`;
 }
 
-function awardRow(p, statKey) {
+function awardRow(p, statKey, otherKey) {
+  const projKey = "projected_" + statKey;
   return `<tr>
     <td><div class="avatar avatar-sm" style="background:${avatarColor(p.player)}">${initials(p.player)}</div></td>
     <td>${p.player}</td>
     <td>${flag(p.team)} ${p.team}</td>
-    <td>${p[statKey[0]]}</td>
-    <td>${p[statKey[1]]}</td>
+    <td>${p[statKey]}</td>
+    <td class="projected-cell">${p[projKey].toFixed(1)}</td>
+    <td>${p[otherKey]}</td>
   </tr>`;
 }
 
@@ -266,17 +271,17 @@ function renderAwards() {
 
   document.getElementById("awards-sub").textContent = a.note;
 
-  const gb = a.golden_boot;
+  const gb = a.golden_boot_projected;
   document.getElementById("golden-boot-podium").innerHTML =
-    [gb[1], gb[0], gb[2]].map(p => podiumCard(p, "goals", "goals")).join(""); // 2nd-1st-3rd for a podium look
+    [gb[1], gb[0], gb[2]].map(p => podiumCard(p, "goals")).join(""); // 2nd-1st-3rd for a podium look
   document.getElementById("golden-boot-tbody").innerHTML =
-    gb.map(p => awardRow(p, ["goals", "assists"])).join("");
+    gb.map(p => awardRow(p, "goals", "assists")).join("");
 
-  const ta = a.top_assists;
+  const ta = a.top_assists_projected;
   document.getElementById("top-assists-podium").innerHTML =
-    [ta[1], ta[0], ta[2]].map(p => podiumCard(p, "assists", "assists")).join("");
+    [ta[1], ta[0], ta[2]].map(p => podiumCard(p, "assists")).join("");
   document.getElementById("top-assists-tbody").innerHTML =
-    ta.map(p => awardRow(p, ["assists", "goals"])).join("");
+    ta.map(p => awardRow(p, "assists", "goals")).join("");
 }
 
 function renderFooter() {

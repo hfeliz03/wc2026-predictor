@@ -45,6 +45,15 @@ real headshots: drop image files in `site/images/players/` (e.g.
 render an `<img>` when a matching file exists, falling back to the avatar
 otherwise.
 
+**Projected winner**: each still-alive player's current per-game rate is
+extrapolated over their team's expected remaining games (from the aware
+model's Monte Carlo `sf_pct`/`final_pct`) — see `model/awards.py`'s module
+docstring for the exact formula and its limits (constant-rate assumption,
+no per-opponent difficulty modeling). Eliminated players' projections equal
+their current tally, since it's frozen. The podium and table both rank by
+this projection; the table still shows the current (non-projected) number
+alongside it.
+
 ## Setup
 
 ```bash

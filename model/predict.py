@@ -387,7 +387,7 @@ def build_predictions() -> dict:
             "r16_form_comparison": weights_payload.get("r16_form_comparison", {}),
             "live_rounds": live["live_rounds"],
         },
-        "awards": awards.build_awards(),
+        "awards": awards.build_awards(mc_aware),
     }
 
     # Lock in this round's predictions the FIRST time they're generated -
